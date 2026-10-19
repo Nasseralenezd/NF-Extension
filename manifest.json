@@ -1,0 +1,58 @@
+{
+  "manifest_version": 3,
+  "name": "NF for Twitch",
+  "version": "1.3.1",
+  "description": "Quality-of-life tweaks for Twitch: pin your favorite streamers in the sidebar, plus sidebar, player and chat options.",
+  "homepage_url": "https://github.com/Nasseralenezd/nf-twitch",
+  "minimum_chrome_version": "102",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "NF for Twitch",
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://gql.twitch.tv/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.twitch.tv/*"
+      ],
+      "js": [
+        "src/shared/features.js",
+        "src/shared/storage.js",
+        "src/content/dom.js",
+        "src/content/features/pinned.js",
+        "src/content/features/autoExpand.js",
+        "src/content/features/hideForYou.js",
+        "src/content/features/sidebarClutter.js",
+        "src/content/features/starButton.js",
+        "src/content/features/scrollVolume.js",
+        "src/content/features/autoQuality.js",
+        "src/content/features/autoTheater.js",
+        "src/content/features/shortcuts.js",
+        "src/content/features/autoClaim.js",
+        "src/content/features/cleanChat.js",
+        "src/content/main.js"
+      ],
+      "css": [
+        "src/content/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

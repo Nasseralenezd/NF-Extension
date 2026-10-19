@@ -1,0 +1,343 @@
+/*
+ * NF for Twitch styles injected into twitch.tv. Colors come from Twitch's own CSS
+ * variables (with dark-theme fallbacks), so light and dark themes both work.
+ */
+
+/* ---------- Favorites section in the sidebar ---------- */
+
+#nftw-favorites[hidden],
+.nftw-dup-hidden,
+.nftw-foryou-hidden,
+.nftw-clutter-hidden {
+  display: none !important;
+}
+
+/* Hide For You: the known parts of Twitch's For You block (title, stories,
+   streak). These are Twitch selectors too; update them here if they change. */
+.nftw-hide-foryou .side-nav .side-nav__title,
+.nftw-hide-foryou .side-nav [class*='storiesLeftNavSection'],
+.nftw-hide-foryou .side-nav div:has(> [class*='saveYourStreak']) {
+  display: none !important;
+}
+
+.nftw-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px;
+  padding: 4px 0 0;
+}
+
+.nftw-header-star {
+  display: inline-flex;
+  color: #ffc93c;
+}
+
+.nftw-header-star path {
+  fill: currentColor;
+}
+
+.nftw-header-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--color-text-base, #efeff1);
+}
+
+.nftw-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.nftw-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  color: var(--color-text-base, #efeff1) !important;
+  text-decoration: none !important;
+}
+
+.nftw-card:hover {
+  background: var(--color-background-interactable-hover, rgba(83, 83, 95, 0.48));
+}
+
+.nftw-card:focus-visible {
+  outline: 2px solid var(--color-text-link, #bf94ff);
+  outline-offset: -2px;
+}
+
+.nftw-avatar {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.nftw-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.nftw-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nftw-name,
+.nftw-game {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.nftw-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.nftw-game {
+  margin-top: 2px;
+  line-height: 1.4;
+  color: var(--color-text-alt-2, #d3d3d9);
+}
+
+.nftw-viewers {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.nftw-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-fill-live, #eb0400);
+}
+
+/* Collapsed sidebar: avatars only, with a red live ring. */
+.nftw-collapsed .nftw-header {
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.nftw-collapsed .nftw-header-title,
+.nftw-collapsed .nftw-meta {
+  display: none;
+}
+
+.nftw-collapsed .nftw-card {
+  justify-content: center;
+  padding: 5px 0;
+}
+
+.nftw-collapsed .nftw-avatar {
+  box-shadow: 0 0 0 2px var(--color-background-base, #18181b), 0 0 0 4px var(--color-fill-live, #eb0400);
+}
+
+/* ---------- Star button on channel pages ---------- */
+
+.nftw-star-btn {
+  flex: none;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 9000px;
+  background: var(--color-background-button-secondary-default, rgba(83, 83, 95, 0.38));
+  color: var(--color-text-button-secondary, #efeff1);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.nftw-star-btn:hover {
+  background: var(--color-background-button-secondary-hover, rgba(83, 83, 95, 0.48));
+}
+
+.nftw-star-btn:focus-visible {
+  outline: 2px solid var(--color-text-link, #bf94ff);
+  outline-offset: 2px;
+}
+
+.nftw-star-btn path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.nftw-star-btn[aria-pressed='true'] {
+  color: #ffc93c;
+}
+
+.nftw-star-btn[aria-pressed='true'] path {
+  fill: currentColor;
+}
+
+.nftw-star-btn.nftw-pop svg {
+  animation: nftw-pop 0.35s ease;
+}
+
+@keyframes nftw-pop {
+  40% {
+    transform: scale(1.3);
+  }
+}
+
+/* ---------- Volume overlay on the player ---------- */
+
+.nftw-osd {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nftw-osd--on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.nftw-osd-bar {
+  width: 96px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.nftw-osd-fill {
+  display: block;
+  height: 100%;
+  background: #9147ff;
+}
+
+.nftw-osd-value {
+  min-width: 34px;
+  text-align: right;
+}
+
+/* ---------- Player extras ---------- */
+
+/* Auto quality opens the settings menu for a moment; keep it invisible. */
+.nftw-quality-busy [data-a-target='player-settings-menu'],
+.nftw-quality-busy .tw-balloon:has([data-a-target='player-settings-menu']) {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.nftw-player-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.nftw-player-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nftw-player-btn:focus-visible {
+  outline: 2px solid #bf94ff;
+}
+
+.nftw-player-btn path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.nftw-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 99;
+  background: #fff;
+  pointer-events: none;
+  animation: nftw-flash 0.4s ease-out forwards;
+}
+
+@keyframes nftw-flash {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---------- Cleaner chat (classes set on <html> by cleanChat.js) ---------- */
+
+.nftw-chat-nobadges .chat-line__message [data-a-target='chat-badge'],
+.nftw-chat-nobadges .chat-line__message .chat-badge {
+  display: none !important;
+}
+
+.nftw-chat-nocheers .chat-line__message img[src*='/actions/cheer/'],
+.nftw-chat-nocheers [class*='bitsLeaderboard']:not([class*='bitsLeaderboard'] *),
+.nftw-chat-nocheers .chat-input .bits-button,
+.nftw-chat-nocheers .chat-input [data-a-target='bits-button'] {
+  display: none !important;
+}
+
+.nftw-chat-nohighlights .community-highlight-stack__card,
+.nftw-chat-nohighlights .chat-room__content div:has(> .community-highlight-stack__card) {
+  display: none !important;
+}
+
+.nftw-chat-compact .chat-line__message {
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  line-height: 20px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nftw-osd,
+  .nftw-star-btn {
+    transition: none;
+  }
+  .nftw-flash {
+    animation: none;
+    display: none;
+  }
+  .nftw-star-btn.nftw-pop svg {
+    animation: none;
+  }
+}

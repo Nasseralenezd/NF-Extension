@@ -1,0 +1,14 @@
+# OS files
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editors and tools
+.vscode/
+.idea/
+.claude/
+
+# Packaged builds
+*.zip
+*.crx
+*.pem
