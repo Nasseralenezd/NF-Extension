@@ -21,6 +21,19 @@ NF for Twitch is a lightweight browser extension for [twitch.tv](https://www.twi
 
 Everything is controlled from the toolbar popup, and changes apply to open Twitch tabs instantly, without a reload.
 
+<table align="center">
+  <tr>
+    <td align="center"><img src="docs/screenshots/sidebar-favorites.png" width="240" alt="The ★ Favorites section at the top of Twitch's sidebar, listing live favorites with game and viewer count"></td>
+    <td align="center"><img src="docs/screenshots/popup-favorites.png" width="270" alt="The popup's Favorites tab: add box, import and export, and the list of favorites with live status"></td>
+    <td align="center"><img src="docs/screenshots/popup-features.png" width="270" alt="The popup's Features tab, with switches grouped under Sidebar"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>★ Favorites in the sidebar</sub></td>
+    <td align="center"><sub>Manage favorites in the popup</sub></td>
+    <td align="center"><sub>Turn features on and off</sub></td>
+  </tr>
+</table>
+
 ## Features
 
 ### Sidebar
@@ -41,6 +54,11 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
 | **Auto quality** | Every channel starts at Source, 1080p, 720p or 480p, or the closest quality below. | Off |
 | **Auto theater mode** | Switches to theater mode when you open a channel. | Off |
 | **Shortcuts & screenshot** | Keyboard shortcuts (below) plus full-resolution PNG screenshots of the stream, with a camera button in the player controls. | Off |
+
+<p align="center">
+  <img src="docs/screenshots/star-button.png" width="317" alt="The ★ button, gold when pinned, next to Twitch's Follow and Subscribe buttons"><br>
+  <sub>The ★ button next to Follow: gold means the streamer is pinned.</sub>
+</p>
 
 ### Chat
 
@@ -72,9 +90,10 @@ These need **Shortcuts & screenshot** switched on. They work on any page with a 
 
 ## Installation
 
-The extension isn't on the Chrome Web Store yet. Install it from source; it takes about a minute.
+The extension isn't on the Chrome Web Store yet. Installing it yourself takes about a minute.
 
-1. Download this repository: **Code → Download ZIP** and extract it, or clone it:
+1. Download **`nf-for-twitch-<version>.zip`** from the [latest release](https://github.com/Nasseralenezd/nf-twitch/releases/latest) and extract it.<br>
+   Or get the source: **Code → Download ZIP**, or clone it:
    ```bash
    git clone https://github.com/Nasseralenezd/nf-twitch.git
    ```
@@ -87,7 +106,7 @@ Requires a Chromium-based browser, version 102 or newer.
 
 ### Updating
 
-Download the latest version (or run `git pull`), click the reload icon on the extension's card in the extensions page, then refresh any open Twitch tabs.
+Download the latest release zip and replace your old folder with it (or run `git pull`), click the reload icon on the extension's card in the extensions page, then refresh any open Twitch tabs.
 
 ## Import format
 
