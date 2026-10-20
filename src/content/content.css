@@ -125,6 +125,37 @@
   background: var(--color-fill-live, #eb0400);
 }
 
+/* Kick section: same cards, in Kick's green. */
+.nftw-kick-logo {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #53fc18;
+  color: #0b0e0f;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.nftw-kick .nftw-dot {
+  background: #53fc18;
+}
+
+.nftw-avatar--letter {
+  display: inline-grid;
+  place-items: center;
+  background: var(--color-background-alt, #26262c);
+  color: var(--color-text-alt-2, #d3d3d9);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.nftw-kick.nftw-collapsed .nftw-avatar {
+  box-shadow: 0 0 0 2px var(--color-background-base, #18181b), 0 0 0 4px #53fc18;
+}
+
 /* Collapsed sidebar: avatars only, with a red live ring. */
 .nftw-collapsed .nftw-header {
   justify-content: center;

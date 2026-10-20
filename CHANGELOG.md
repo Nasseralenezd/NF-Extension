@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 — 2026-10-21
+
+- **Kick channels**: a Kick section under ★ Favorites in the Twitch sidebar, showing which Kick channels are live. It lists the channels you add in the popup, plus the channels you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab.
+- The popup's Favorites tab has a **Twitch | Kick** switch; each list has its own add, remove, reorder and import/export.
+- Streamers who hide their viewer count on Kick show as "Live" without a number.
+- New permissions: `cookies` (to read your kick.com login for your followed channels) and access to `kick.com`. See PRIVACY.md.
+
 ## 1.3.1 — 2026-10-19
 
 - Renamed to **NF for Twitch**.

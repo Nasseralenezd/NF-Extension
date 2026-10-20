@@ -34,6 +34,9 @@
     if (change.favorites) {
       for (const id of running) NF.modules.get(id).onFavorites?.(change.favorites);
     }
+    if (change.kickFavorites) {
+      for (const id of running) NF.modules.get(id).onKickFavorites?.(change.kickFavorites);
+    }
   });
 
   apply();

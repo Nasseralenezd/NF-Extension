@@ -5,7 +5,7 @@
 <h1 align="center">NF for Twitch</h1>
 
 <p align="center">
-  Pin your favorite streamers to the top of Twitch's sidebar, and tidy up the rest of the site.
+  Pin your favorite Twitch and Kick streamers to the top of Twitch's sidebar, and tidy up the rest of the site.
 </p>
 
 <p align="center">
@@ -17,18 +17,18 @@
 
 ---
 
-NF for Twitch is a lightweight browser extension for [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of the sidebar, and adds a set of optional quality-of-life tweaks for the sidebar, the player and chat.
+NF for Twitch is a lightweight browser extension for [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of the sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for the sidebar, the player and chat.
 
 Everything is controlled from the toolbar popup, and changes apply to open Twitch tabs instantly, without a reload.
 
 <table align="center">
   <tr>
-    <td align="center"><img src="docs/screenshots/sidebar-favorites.png" width="240" alt="The ★ Favorites section at the top of Twitch's sidebar, listing live favorites with game and viewer count"></td>
+    <td align="center"><img src="docs/screenshots/sidebar-favorites.png" width="240" alt="The ★ Favorites section at the top of Twitch's sidebar, followed by the Kick section, both listing live channels with game and viewer count"></td>
     <td align="center"><img src="docs/screenshots/popup-favorites.png" width="270" alt="The popup's Favorites tab: add box, import and export, and the list of favorites with live status"></td>
     <td align="center"><img src="docs/screenshots/popup-features.png" width="270" alt="The popup's Features tab, with switches grouped under Sidebar"></td>
   </tr>
   <tr>
-    <td align="center"><sub>★ Favorites in the sidebar</sub></td>
+    <td align="center"><sub>★ Favorites and Kick in the sidebar</sub></td>
     <td align="center"><sub>Manage favorites in the popup</sub></td>
     <td align="center"><sub>Turn features on and off</sub></td>
   </tr>
@@ -41,6 +41,7 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
 | Feature | What it does | Default |
 |---|---|---|
 | **Pinned favorites** | A ★ Favorites section listing your favorites who are live right now, either at the top of the sidebar or just above Followed Channels. Sorted by viewers or by your own order, and optionally hidden from the Followed list so they don't show twice. | On (Top, by viewers) |
+| **Kick channels** | A Kick section under Favorites listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. | On |
 | **Auto-expand Followed** | Clicks "Show More" until every followed channel is listed. It can also open the sidebar when it starts collapsed. | On |
 | **Hide For You** | Removes the For You block (stories, streaks) above your Followed list. | Off |
 | **Hide sidebar clutter** | Separate switches for sponsored cards in Followed, Live Channels, Viewers Also Watch and Recommended Categories. | Off |
@@ -72,9 +73,10 @@ Features with sub-options have them all switched on, so a feature does something
 ### Favorites management
 
 - **Add** a streamer with the ★ on their channel page, or type a name or paste a `twitch.tv` link in the popup.
+- **Kick:** switch the popup's Favorites tab to **Kick** to add Kick names or `kick.com` links. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
 - **Reorder** by dragging, or with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> on a row's handle. Remove with one click, with Undo.
-- **Import / export** your list as a JSON file (see [Import format](#import-format)).
-- Favorites and settings sync across browsers signed in to the same account (up to about 600 favorites).
+- **Import / export** your Twitch or Kick list as a JSON file (see [Import format](#import-format)).
+- Favorites and settings sync across browsers signed in to the same account (up to about 600 channels per list).
 
 ## Keyboard shortcuts
 
@@ -119,7 +121,8 @@ Download the latest release zip and replace your old folder with it (or run `git
 **Import** reads that format and also accepts:
 
 - `twitch.tv` links or `@name` entries, e.g. `["https://www.twitch.tv/lirik"]`
-- objects with a `login`, `username`, `user_login`, `broadcaster_login`, `channel`, `name` or `displayName` field
+- objects with a `login`, `slug`, `username`, `user_login`, `broadcaster_login`, `channel`, `name` or `displayName` field
+- for the Kick list, `kick.com` links instead of `twitch.tv` links
 - any of the above wrapped in an object under `favorites`, `channels`, `streamers`, `users` or `list`
 
 When you already have favorites, you choose whether to add the new ones or replace your list. Channels that no longer exist on Twitch are skipped (as long as Twitch can be reached to check).
@@ -128,7 +131,8 @@ When you already have favorites, you choose whether to add the new ones or repla
 
 NF for Twitch has no account, no analytics and no tracking.
 
-- The only request the extension makes on its own sends the **names of your favorite channels** (and names you add) to Twitch's GraphQL endpoint, `gql.twitch.tv`, to get their live status, viewer count, game and avatar. No cookies or sign-in are sent.
+- To show live status, viewer count, game and avatar, the extension sends the **names of your favorite channels** to Twitch (`gql.twitch.tv`, no cookies or sign-in) and the names on your Kick list to Kick (`kick.com`).
+- To include the channels you follow on Kick, it reads Kick's `session_token` login cookie in your browser and sends it **only to kick.com**, to request your followed channels. You can turn this off in the popup.
 - Your favorites and settings are stored in your browser's `chrome.storage.sync`. Looked-up channel data is cached for a few minutes in session storage.
 - Avatars load from Twitch's image servers. Screenshots and exports are saved only to your computer.
 
@@ -139,7 +143,9 @@ The full policy is in [PRIVACY.md](PRIVACY.md).
 | Permission | Why it's needed |
 |---|---|
 | `storage` | Save your favorites and settings |
-| `https://gql.twitch.tv/*` | Look up which favorites are live |
+| `cookies` | Read your kick.com login, only to get the channels you follow on Kick |
+| `https://gql.twitch.tv/*` | Look up which Twitch favorites are live |
+| `https://kick.com/*` | Look up which Kick channels are live, and your followed Kick channels |
 | Content scripts on `https://www.twitch.tv/*` | Add the features to Twitch pages |
 
 ## How it works
@@ -150,7 +156,7 @@ Plain JavaScript and CSS (Manifest V3), with no build step and no dependencies.
 manifest.json
 icons/                      Extension icons (16, 48, 128 px)
 src/
-  background.js             Service worker: live-status lookups with a short cache
+  background.js             Service worker: Twitch and Kick live-status lookups with a short cache
   shared/
     features.js             Feature registry: names, groups, defaults, options
     storage.js              Settings and favorites storage, import parser
@@ -173,6 +179,7 @@ src/
 - **A feature stopped working after a Twitch update.** Twitch changes its page now and then. Every selector the extension depends on is in the `SEL` table at the top of [`src/content/dom.js`](src/content/dom.js), plus a few marked rules in [`content.css`](src/content/content.css). Please [open an issue](https://github.com/Nasseralenezd/nf-twitch/issues) with what broke.
 - **Nothing happens after updating the extension.** Refresh the Twitch tab; tabs opened before the update still run the old version.
 - **Favorites show no live status.** Live status comes from Twitch's undocumented GraphQL endpoint (the same one BetterTTV and FrankerFaceZ use). If Twitch changes it, the Favorites section stops updating until the extension is fixed.
+- **The Kick section is empty or missing your follows.** Kick data comes from the JSON endpoints kick.com's own pages use (Kick's official API needs a developer key). Make sure you're logged in to kick.com in the same browser, and that **Include channels I follow on Kick** is on. Kick can change these endpoints or block them at any time.
 
 ## Changelog
 
@@ -180,7 +187,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Disclaimer
 
-NF for Twitch is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc. Twitch is a trademark of Twitch Interactive, Inc.
+NF for Twitch is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc. or Kick. Twitch and Kick are trademarks of their respective owners.
 
 ## License
 

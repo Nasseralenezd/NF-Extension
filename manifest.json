@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "NF for Twitch",
-  "version": "1.3.1",
-  "description": "Quality-of-life tweaks for Twitch: pin your favorite streamers in the sidebar, plus sidebar, player and chat options.",
+  "version": "1.4.0",
+  "description": "Quality-of-life tweaks for Twitch: pin favorite Twitch and Kick streamers in the sidebar, plus sidebar, player and chat options.",
   "homepage_url": "https://github.com/Nasseralenezd/nf-twitch",
   "minimum_chrome_version": "102",
   "icons": {
@@ -22,10 +22,12 @@
     "service_worker": "src/background.js"
   },
   "permissions": [
-    "storage"
+    "storage",
+    "cookies"
   ],
   "host_permissions": [
-    "https://gql.twitch.tv/*"
+    "https://gql.twitch.tv/*",
+    "https://kick.com/*"
   ],
   "content_scripts": [
     {
@@ -37,6 +39,7 @@
         "src/shared/storage.js",
         "src/content/dom.js",
         "src/content/features/pinned.js",
+        "src/content/features/kick.js",
         "src/content/features/autoExpand.js",
         "src/content/features/hideForYou.js",
         "src/content/features/sidebarClutter.js",

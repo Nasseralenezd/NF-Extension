@@ -149,7 +149,7 @@
   /**
    * Everything the sidebar shows above `el` (For You, stories, streaks...),
    * collected level by level up to the sidebar content. The last item is the
-   * topmost block. Our own Favorites section is never included.
+   * topmost block. Our own sections (ids starting with "nftw-") are never included.
    */
   NF.blocksAbove = function (el) {
     const root = NF.SEL.sideNavContent.split(',').map((s) => NF.$(s.trim())).find(Boolean);
@@ -157,10 +157,24 @@
     if (!root?.contains(el)) return blocks;
     for (let node = el; node && node !== root; node = node.parentElement) {
       for (let prev = node.previousElementSibling; prev; prev = prev.previousElementSibling) {
-        if (prev.id !== 'nftw-favorites') blocks.push(prev);
+        if (!prev.id?.startsWith('nftw-')) blocks.push(prev);
       }
     }
     return blocks;
+  };
+
+  /**
+   * Where our sidebar sections go: before the topmost sidebar block
+   * (position "top") or before Followed Channels ("followed").
+   */
+  NF.favoritesAnchor = function (position) {
+    const followed = NF.followedSection(false);
+    if (!followed) return null;
+    if (position === 'top') {
+      const above = NF.blocksAbove(followed);
+      if (above.length) return above[above.length - 1];
+    }
+    return followed;
   };
 
   /**

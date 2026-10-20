@@ -26,6 +26,10 @@
 
     <main>
       <section id="panel-favorites" role="tabpanel" aria-labelledby="tab-favorites">
+        <div class="platforms segmented" role="group" aria-label="Platform">
+          <button type="button" data-platform="twitch" aria-pressed="true">Twitch <span id="count-twitch" class="count"></span></button>
+          <button type="button" data-platform="kick" aria-pressed="false"><span class="kick-mark" aria-hidden="true">K</span>Kick <span id="count-kick" class="count"></span></button>
+        </div>
         <form id="add-form" class="add" autocomplete="off">
           <label class="sr-only" for="add-input">Streamer name or Twitch link</label>
           <input id="add-input" type="text" placeholder="Streamer name or twitch.tv link" spellcheck="false" />
@@ -59,10 +63,11 @@
           <svg class="empty-star" viewBox="0 0 24 24" width="36" height="36" aria-hidden="true">
             <path d="M12 2.8l2.83 5.73 6.33.92-4.58 4.46 1.08 6.3L12 17.24l-5.66 2.97 1.08-6.3-4.58-4.46 6.33-.92L12 2.8z" />
           </svg>
-          <p class="empty-title">No favorites yet</p>
-          <p class="empty-text">Click the ★ next to Follow on any channel, type a name above, or import a list.</p>
+          <p id="fav-empty-title" class="empty-title">No favorites yet</p>
+          <p id="fav-empty-text" class="empty-text">Click the ★ next to Follow on any channel, type a name above, or import a list.</p>
         </div>
 
+        <p id="kick-status" class="hint kick-status" hidden></p>
         <p id="fav-hint" class="hint" hidden>Drag to reorder. Live favorites show in your Twitch sidebar.</p>
       </section>
 

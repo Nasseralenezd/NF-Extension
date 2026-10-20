@@ -1,6 +1,6 @@
 /*
- * Service worker: looks up channels on Twitch (live status, viewers, game,
- * avatar) for the content scripts and the popup.
+ * Service worker: looks up channels on Twitch and Kick (live status, viewers,
+ * game, avatar) for the content scripts and the popup.
  *
  * Uses Twitch's public GraphQL endpoint with the web site's own Client-Id,
  * the same approach BetterTTV, FrankerFaceZ and 7TV use. No sign-in needed.
@@ -86,11 +86,135 @@ async function lookup(logins, force) {
   return Object.fromEntries(wanted.map((login) => [login, cache.get(login)?.user ?? null]));
 }
 
+/* ---------- Kick ----------
+ * Kick's official API needs a developer key, so this uses the same JSON
+ * endpoints kick.com's own pages use. Channel pages are public; the list of
+ * channels you follow needs your kick.com login.
+ */
+const KICK = 'https://kick.com';
+const KICK_TTL_MS = 60_000;
+const KICK_FOLLOWED_TTL_MS = 120_000; // the follow list takes several requests, so ask less often
+const KICK_FOLLOWED_MAX_PAGES = 40; // 5 channels per page: up to 200 live follows
+const KICK_PARALLEL = 4;
+
+const kickCache = new Map(); // slug -> { at, channel }, channel null when it doesn't exist
+let kickFollowedCache = null; // { at, result }
+
+function shapeKick(c) {
+  const stream = c.livestream;
+  return {
+    login: c.slug,
+    displayName: c.user?.username || c.slug,
+    avatar: c.user?.profile_pic || '',
+    live: !!stream?.is_live,
+    viewers: stream?.viewer_count ?? 0,
+    title: stream?.session_title ?? '',
+    game: stream?.categories?.[0]?.name ?? '',
+  };
+}
+
+async function kickChannel(slug, force) {
+  const hit = kickCache.get(slug);
+  if (!force && hit && Date.now() - hit.at < KICK_TTL_MS) return hit.channel;
+  const res = await fetch(`${KICK}/api/v2/channels/${encodeURIComponent(slug)}`, { headers: { Accept: 'application/json' } });
+  if (res.status === 404) {
+    kickCache.set(slug, { at: Date.now(), channel: null });
+    return null;
+  }
+  if (!res.ok) throw new Error(`Kick answered ${res.status}`);
+  const channel = shapeKick(await res.json());
+  kickCache.set(slug, { at: Date.now(), channel });
+  return channel;
+}
+
+/** { slug: channel | null }. Slugs Kick couldn't be asked about are left out. */
+async function kickChannels(slugs, force) {
+  const out = {};
+  const queue = [...new Set(slugs.map((s) => String(s).toLowerCase()))];
+  const worker = async () => {
+    while (queue.length) {
+      const slug = queue.shift();
+      try {
+        out[slug] = await kickChannel(slug, force);
+      } catch {
+        // unknown for now (network or Kick blocking); try again next refresh
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(KICK_PARALLEL, queue.length) }, worker));
+  return out;
+}
+
+// One entry of Kick's followed-channels list: { channel_slug, user_username,
+// profile_picture, is_live, viewer_count, show_view_count, category_name,
+// session_title }.
+function shapeFollowed(item) {
+  if (!item?.channel_slug) return null;
+  return {
+    login: item.channel_slug.toLowerCase(),
+    displayName: item.user_username || item.channel_slug,
+    avatar: item.profile_picture || '',
+    live: !!item.is_live,
+    viewers: item.viewer_count ?? 0,
+    hideViewers: item.show_view_count === false, // the streamer hides the count on Kick
+    title: item.session_title ?? '',
+    game: item.category_name ?? '',
+  };
+}
+
+// The channels you follow that are live, using the login kick.com keeps in
+// its session_token cookie. The token is only ever sent to kick.com. Kick
+// sends 5 channels per page with live channels first, so paging stops at the
+// first offline one.
+async function fetchKickFollowed() {
+  let token = null;
+  try {
+    const cookie = await chrome.cookies.get({ url: KICK, name: 'session_token' });
+    if (cookie?.value) token = decodeURIComponent(cookie.value);
+  } catch {}
+  if (!token) return { loggedIn: false, channels: [] };
+
+  const live = [];
+  let cursor = 0;
+  for (let page = 0; page < KICK_FOLLOWED_MAX_PAGES; page++) {
+    const res = await fetch(`${KICK}/api/v2/channels/followed?cursor=${cursor}`, {
+      headers: { Accept: 'application/json', Authorization: `Bearer ${token}` },
+      credentials: 'omit',
+    });
+    if (res.status === 401) return { loggedIn: false, channels: [] };
+    if (!res.ok) throw new Error(`Kick answered ${res.status}`);
+    const { channels = [], nextCursor } = await res.json();
+    const shaped = channels.map(shapeFollowed).filter(Boolean);
+    live.push(...shaped.filter((c) => c.live));
+    if (shaped.some((c) => !c.live) || nextCursor == null || !channels.length) break;
+    cursor = nextCursor;
+  }
+  return { loggedIn: true, channels: live };
+}
+
+async function kickFollowed(force) {
+  if (!force && kickFollowedCache && Date.now() - kickFollowedCache.at < KICK_FOLLOWED_TTL_MS) return kickFollowedCache.result;
+  const result = await fetchKickFollowed();
+  kickFollowedCache = { at: Date.now(), result };
+  return result;
+}
+
+async function kickLookup({ slugs = [], followed = false, force = false }) {
+  const [channels, follow] = await Promise.all([
+    kickChannels(slugs, force),
+    followed ? kickFollowed(force).catch((err) => ({ loggedIn: null, channels: [], error: String(err?.message || err) })) : null,
+  ]);
+  return { channels, followed: follow };
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message?.type !== 'lookup') return;
-  lookup(message.logins || [], message.force).then(
-    (users) => sendResponse({ ok: true, users }),
-    (error) => sendResponse({ ok: false, error: String(error?.message || error) })
-  );
-  return true; // answer asynchronously
+  const reply = (promise) => {
+    promise.then(
+      (result) => sendResponse({ ok: true, ...result }),
+      (error) => sendResponse({ ok: false, error: String(error?.message || error) })
+    );
+    return true; // answer asynchronously
+  };
+  if (message?.type === 'lookup') return reply(lookup(message.logins || [], message.force).then((users) => ({ users })));
+  if (message?.type === 'kick') return reply(kickLookup(message));
 });

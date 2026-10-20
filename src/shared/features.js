@@ -48,6 +48,15 @@
       ],
     },
     {
+      id: 'kick',
+      group: 'sidebar',
+      name: 'Kick channels',
+      description: 'Live Kick channels get their own section under Favorites. Clicking one opens it on kick.com in a new tab.',
+      status: 'live',
+      default: true,
+      options: [{ id: 'kickFollowed', type: 'toggle', label: 'Include channels I follow on Kick (when logged in to kick.com)', default: true }],
+    },
+    {
       id: 'autoExpand',
       group: 'sidebar',
       name: 'Auto-expand Followed',

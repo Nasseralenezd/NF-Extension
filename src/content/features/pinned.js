@@ -43,20 +43,18 @@
   // it only touches the DOM when something actually changed.
   function render() {
     if (!active) return;
-    const followed = NF.followedSection(false);
-    if (!followed) return;
-    let anchor = followed;
-    if (settings.pinnedPosition === 'top') {
-      const above = NF.blocksAbove(followed);
-      if (above.length) anchor = above[above.length - 1];
-    }
+    const anchor = NF.favoritesAnchor(settings.pinnedPosition);
+    if (!anchor) return;
 
     let section = document.getElementById(SECTION_ID);
     if (!section) {
       section = build();
       signature = '';
     }
-    if (section.nextElementSibling !== anchor) anchor.before(section);
+    // The Kick section may sit right after us; that still counts as in place.
+    let after = section.nextElementSibling;
+    if (after?.id === 'nftw-kick') after = after.nextElementSibling;
+    if (after !== anchor) anchor.before(section);
 
     const collapsed = NF.isSideNavCollapsed();
     const next = JSON.stringify([collapsed, live.map((u) => [u.login, u.displayName, u.avatar, u.viewers, u.game, u.title])]);

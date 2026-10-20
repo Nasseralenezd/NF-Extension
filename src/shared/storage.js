@@ -2,18 +2,26 @@
  * Settings and favorites, kept in chrome.storage.sync so they follow you
  * across browsers signed in to the same account.
  *
- * Favorites are stored as a plain list of logins in your own order:
- * ["lirik", "shroud", ...]. Sync storage allows 8 KB per key, which fits
- * roughly 600 streamers this way. Display names, avatars and live status are
- * looked up on demand (see background.js). Older versions stored
- * [{ login, name }] objects; those are still read.
+ * Each platform has its own list of channel names in your own order:
+ *   favorites      Twitch, e.g. ["lirik", "shroud"]
+ *   kickFavorites  Kick, e.g. ["xqc"]
+ * Sync storage allows 8 KB per key, which fits roughly 600 names per list.
+ * Display names, avatars and live status are looked up on demand (see
+ * background.js). Older versions stored Twitch favorites as [{ login, name }]
+ * objects; those are still read.
  *
- * The functions below hand out [{ login, name }] so callers don't care.
+ * The functions below hand out [{ login, name }] so callers don't care, and
+ * take an optional platform ('twitch' by default, or 'kick').
  */
 (function (root) {
   const { defaultSettings } = root.NFTwitchFeatures;
   const area = chrome.storage.sync;
-  const LOGIN_RE = /^[a-z0-9_]{1,25}$/;
+
+  const PLATFORMS = {
+    twitch: { key: 'favorites', site: /twitch\.tv\/([^/?#\s]+)/i, name: /^[a-z0-9_]{1,25}$/ },
+    kick: { key: 'kickFavorites', site: /kick\.com\/([^/?#\s]+)/i, name: /^[a-z0-9_-]{1,32}$/ },
+  };
+  const keyOf = (platform = 'twitch') => PLATFORMS[platform].key;
 
   async function getSettings() {
     const { settings } = await area.get('settings');
@@ -48,41 +56,42 @@
 
   const toStored = (favorites) => favorites.map((f) => (typeof f === 'string' ? f : f.login));
 
-  async function getFavorites() {
-    const { favorites } = await area.get('favorites');
-    return fromStored(favorites);
+  async function getFavorites(platform) {
+    const key = keyOf(platform);
+    const stored = await area.get(key);
+    return fromStored(stored[key]);
   }
 
-  function setFavorites(favorites) {
-    return serial(() => area.set({ favorites: toStored(favorites) }));
+  function setFavorites(favorites, platform) {
+    return serial(() => area.set({ [keyOf(platform)]: toStored(favorites) }));
   }
 
-  async function isFavorite(login) {
-    const favorites = await getFavorites();
+  async function isFavorite(login, platform) {
+    const favorites = await getFavorites(platform);
     return favorites.some((f) => f.login === login);
   }
 
-  function addFavorite({ login }) {
+  function addFavorite({ login }, platform) {
     return serial(async () => {
-      const favorites = await getFavorites();
+      const favorites = await getFavorites(platform);
       if (favorites.some((f) => f.login === login)) return false;
-      await area.set({ favorites: [...toStored(favorites), login] });
+      await area.set({ [keyOf(platform)]: [...toStored(favorites), login] });
       return true;
     });
   }
 
-  function removeFavorite(login) {
+  function removeFavorite(login, platform) {
     return serial(async () => {
-      const favorites = await getFavorites();
-      await area.set({ favorites: toStored(favorites.filter((f) => f.login !== login)) });
+      const favorites = await getFavorites(platform);
+      await area.set({ [keyOf(platform)]: toStored(favorites.filter((f) => f.login !== login)) });
     });
   }
 
   /** Pins (on = true) or unpins a login. Queued with other writes, so the last call wins. */
-  function setFavorite(login, on) {
+  function setFavorite(login, on, platform) {
     return serial(async () => {
-      const current = toStored(await getFavorites()).filter((l) => l !== login);
-      await area.set({ favorites: on ? [...current, login] : current });
+      const current = toStored(await getFavorites(platform)).filter((l) => l !== login);
+      await area.set({ [keyOf(platform)]: on ? [...current, login] : current });
     });
   }
 
@@ -91,23 +100,24 @@
    * the order given and skipping ones you already have. Returns how many
    * were added.
    */
-  function importFavorites(logins, { replace = false } = {}) {
+  function importFavorites(logins, { replace = false, platform } = {}) {
     return serial(async () => {
-      const current = replace ? [] : toStored(await getFavorites());
+      const current = replace ? [] : toStored(await getFavorites(platform));
       const seen = new Set(current);
       const added = logins.filter((login) => !seen.has(login) && seen.add(login));
-      await area.set({ favorites: [...current, ...added] });
+      await area.set({ [keyOf(platform)]: [...current, ...added] });
       return added.length;
     });
   }
 
-  /** Accepts "name", "@name" or any twitch.tv URL. Returns a login or null. */
-  function normalizeLogin(input) {
+  /** Accepts "name", "@name" or a channel URL (twitch.tv/… or kick.com/…). Returns a login or null. */
+  function normalizeLogin(input, platform = 'twitch') {
+    const rules = PLATFORMS[platform];
     let value = String(input || '').trim();
-    const url = value.match(/twitch\.tv\/([^/?#\s]+)/i);
+    const url = value.match(rules.site);
     if (url) value = url[1];
     value = value.replace(/^@/, '').toLowerCase();
-    return LOGIN_RE.test(value) ? value : null;
+    return rules.name.test(value) ? value : null;
   }
 
   /**
@@ -116,7 +126,7 @@
    * username / channel field, optionally wrapped as { favorites: [...] }.
    * Returns { logins, invalid } with duplicates removed. Throws on bad JSON.
    */
-  function parseImport(text) {
+  function parseImport(text, platform = 'twitch') {
     const data = JSON.parse(text);
     const list = Array.isArray(data)
       ? data
@@ -129,22 +139,23 @@
       const raw =
         typeof item === 'string'
           ? item
-          : item && (item.login ?? item.username ?? item.user_login ?? item.broadcaster_login ?? item.channel ?? item.name ?? item.displayName);
-      const login = normalizeLogin(raw);
+          : item && (item.login ?? item.slug ?? item.username ?? item.user_login ?? item.broadcaster_login ?? item.channel ?? item.name ?? item.displayName);
+      const login = normalizeLogin(raw, platform);
       if (login) logins.add(login);
       else invalid++;
     }
     return { logins: [...logins], invalid };
   }
 
-  /** Calls back with { settings?, favorites? } holding the new values that changed. */
+  /** Calls back with { settings?, favorites?, kickFavorites? } holding the new values that changed. */
   function onChange(callback) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName !== 'sync') return;
       const out = {};
       if (changes.settings) out.settings = changes.settings.newValue;
       if (changes.favorites) out.favorites = fromStored(changes.favorites.newValue);
-      if (out.settings || out.favorites) callback(out);
+      if (changes.kickFavorites) out.kickFavorites = fromStored(changes.kickFavorites.newValue);
+      if (Object.keys(out).length) callback(out);
     });
   }
 

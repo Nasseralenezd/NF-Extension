@@ -159,6 +159,48 @@ main {
   padding: 12px 16px 14px;
 }
 
+/* ---------- Twitch / Kick switch ---------- */
+
+.platforms.segmented {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.platforms button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.kick-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #53fc18;
+  color: #0b0e0f;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.platform-kick .live-dot {
+  background: #53fc18;
+}
+
+.platform-kick .fav.is-live .avatar {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #53fc18;
+}
+
+.kick-status {
+  margin-top: 10px;
+}
+
 /* ---------- Add form ---------- */
 
 .add {
