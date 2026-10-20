@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "NF for Twitch",
-  "version": "1.4.0",
-  "description": "Quality-of-life tweaks for Twitch: pin favorite Twitch and Kick streamers in the sidebar, plus sidebar, player and chat options.",
-  "homepage_url": "https://github.com/Nasseralenezd/nf-twitch",
+  "name": "NF Extension",
+  "version": "1.4.1",
+  "description": "Pin your favorite Twitch and Kick streamers in the Twitch sidebar, plus optional sidebar, player and chat tweaks.",
+  "homepage_url": "https://github.com/Nasseralenezd/NF-Extension",
   "minimum_chrome_version": "102",
   "icons": {
     "16": "icons/icon16.png",
@@ -11,7 +11,7 @@
     "128": "icons/icon128.png"
   },
   "action": {
-    "default_title": "NF for Twitch",
+    "default_title": "NF Extension",
     "default_popup": "src/popup/popup.html",
     "default_icon": {
       "16": "icons/icon16.png",

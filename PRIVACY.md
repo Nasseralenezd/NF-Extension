@@ -2,7 +2,7 @@
 
 _Last updated: October 21, 2026_
 
-NF for Twitch is a browser extension that adds features to twitch.tv. This policy explains what data it handles. In short: it collects nothing about you, and it sends nothing to its author.
+NF Extension is a browser extension that adds features to twitch.tv. This policy explains what data it handles. In short: it collects nothing about you, and it sends nothing to its author.
 
 ## What the extension stores
 
@@ -59,4 +59,4 @@ If this policy changes, the new version will be published in this repository wit
 
 ## Contact
 
-Questions? Open an issue at [github.com/Nasseralenezd/nf-twitch/issues](https://github.com/Nasseralenezd/nf-twitch/issues).
+Questions? Open an issue at [github.com/Nasseralenezd/NF-Extension/issues](https://github.com/Nasseralenezd/NF-Extension/issues).

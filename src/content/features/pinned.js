@@ -19,7 +19,7 @@
     try {
       await update(force);
     } catch (err) {
-      if (NF.alive()) console.warn('[NF for Twitch] favorites refresh failed:', err);
+      if (NF.alive()) console.warn('[NF Extension] favorites refresh failed:', err);
     }
   }
 

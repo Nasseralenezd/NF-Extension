@@ -69,7 +69,7 @@
       // Queued in order, so quick double clicks end in the state of the last click.
       await NF.storage.setFavorite(login, on);
     } catch (err) {
-      if (NF.alive()) console.warn('[NF for Twitch] could not save favorite:', err);
+      if (NF.alive()) console.warn('[NF Extension] could not save favorite:', err);
       try {
         load(await NF.storage.getFavorites()); // show what is really saved
       } catch {}

@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="icons/icon128.png" width="96" height="96" alt="NF for Twitch icon">
+  <img src="icons/icon128.png" width="96" height="96" alt="NF Extension icon">
 </p>
 
-<h1 align="center">NF for Twitch</h1>
+<h1 align="center">NF Extension</h1>
 
 <p align="center">
   Pin your favorite Twitch and Kick streamers to the top of Twitch's sidebar, and tidy up the rest of the site.
 </p>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/github/manifest-json/v/Nasseralenezd/nf-twitch?color=9146FF&label=version">
+  <img alt="Version" src="https://img.shields.io/github/manifest-json/v/Nasseralenezd/NF-Extension?color=9146FF&label=version">
   <img alt="Manifest V3" src="https://img.shields.io/badge/manifest-v3-9146FF">
   <img alt="Chrome, Edge, Brave" src="https://img.shields.io/badge/browsers-Chrome%20%7C%20Edge%20%7C%20Brave-555">
   <img alt="No build step" src="https://img.shields.io/badge/build-none-555">
@@ -17,7 +17,7 @@
 
 ---
 
-NF for Twitch is a lightweight browser extension for [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of the sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for the sidebar, the player and chat.
+NF Extension is a lightweight browser extension for [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of the sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for the sidebar, the player and chat.
 
 Everything is controlled from the toolbar popup, and changes apply to open Twitch tabs instantly, without a reload.
 
@@ -94,15 +94,15 @@ These need **Shortcuts & screenshot** switched on. They work on any page with a 
 
 The extension isn't on the Chrome Web Store yet. Installing it yourself takes about a minute.
 
-1. Download **`nf-for-twitch-<version>.zip`** from the [latest release](https://github.com/Nasseralenezd/nf-twitch/releases/latest) and extract it.<br>
+1. Download **`nf-extension-<version>.zip`** from the [latest release](https://github.com/Nasseralenezd/NF-Extension/releases/latest) and extract it.<br>
    Or get the source: **Code → Download ZIP**, or clone it:
    ```bash
-   git clone https://github.com/Nasseralenezd/nf-twitch.git
+   git clone https://github.com/Nasseralenezd/NF-Extension.git
    ```
 2. Open your browser's extensions page: `chrome://extensions`, `edge://extensions` or `brave://extensions`.
 3. Turn on **Developer mode**.
 4. Click **Load unpacked** and select the folder that contains `manifest.json`.
-5. Optional: pin NF for Twitch to the toolbar (puzzle-piece icon → pin).
+5. Optional: pin NF Extension to the toolbar (puzzle-piece icon → pin).
 
 Requires a Chromium-based browser, version 102 or newer.
 
@@ -129,7 +129,7 @@ When you already have favorites, you choose whether to add the new ones or repla
 
 ## Privacy
 
-NF for Twitch has no account, no analytics and no tracking.
+NF Extension has no account, no analytics and no tracking.
 
 - To show live status, viewer count, game and avatar, the extension sends the **names of your favorite channels** to Twitch (`gql.twitch.tv`, no cookies or sign-in) and the names on your Kick list to Kick (`kick.com`).
 - To include the channels you follow on Kick, it reads Kick's `session_token` login cookie in your browser and sends it **only to kick.com**, to request your followed channels. You can turn this off in the popup.
@@ -176,7 +176,7 @@ src/
 
 ## Troubleshooting
 
-- **A feature stopped working after a Twitch update.** Twitch changes its page now and then. Every selector the extension depends on is in the `SEL` table at the top of [`src/content/dom.js`](src/content/dom.js), plus a few marked rules in [`content.css`](src/content/content.css). Please [open an issue](https://github.com/Nasseralenezd/nf-twitch/issues) with what broke.
+- **A feature stopped working after a Twitch update.** Twitch changes its page now and then. Every selector the extension depends on is in the `SEL` table at the top of [`src/content/dom.js`](src/content/dom.js), plus a few marked rules in [`content.css`](src/content/content.css). Please [open an issue](https://github.com/Nasseralenezd/NF-Extension/issues) with what broke.
 - **Nothing happens after updating the extension.** Refresh the Twitch tab; tabs opened before the update still run the old version.
 - **Favorites show no live status.** Live status comes from Twitch's undocumented GraphQL endpoint (the same one BetterTTV and FrankerFaceZ use). If Twitch changes it, the Favorites section stops updating until the extension is fixed.
 - **The Kick section is empty or missing your follows.** Kick data comes from the JSON endpoints kick.com's own pages use (Kick's official API needs a developer key). Make sure you're logged in to kick.com in the same browser, and that **Include channels I follow on Kick** is on. Kick can change these endpoints or block them at any time.
@@ -187,7 +187,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Disclaimer
 
-NF for Twitch is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc. or Kick. Twitch and Kick are trademarks of their respective owners.
+NF Extension is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc. or Kick. Twitch and Kick are trademarks of their respective owners.
 
 ## License
 

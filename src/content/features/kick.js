@@ -20,7 +20,7 @@
     try {
       await update(force);
     } catch (err) {
-      if (NF.alive()) console.warn('[NF for Twitch] Kick refresh failed:', err);
+      if (NF.alive()) console.warn('[NF Extension] Kick refresh failed:', err);
     }
   }
 

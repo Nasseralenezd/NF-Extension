@@ -232,11 +232,11 @@
     try {
       const res = await chrome.runtime.sendMessage({ type: 'lookup', logins, force });
       if (res?.ok) return res.users;
-      console.warn('[NF for Twitch] lookup failed:', res?.error);
+      console.warn('[NF Extension] lookup failed:', res?.error);
     } catch (err) {
       // "Extension context invalidated" happens when the extension is reloaded
       // while this tab stays open. Refreshing the tab fixes it.
-      if (NF.alive()) console.warn('[NF for Twitch]', err);
+      if (NF.alive()) console.warn('[NF Extension]', err);
     }
     return null;
   };

@@ -21,7 +21,7 @@
           feature.update?.(settings);
         }
       } catch (err) {
-        console.error(`[NF for Twitch] ${id}:`, err);
+        console.error(`[NF Extension] ${id}:`, err);
       }
     }
   }

@@ -20,7 +20,7 @@
       emptyTitle: 'No favorites yet',
       emptyText: 'Click the ★ next to Follow on any channel, type a name above, or import a list.',
       hint: 'Drag to reorder. Live favorites show in your Twitch sidebar.',
-      file: 'nf-twitch-favorites',
+      file: 'nf-extension-twitch',
     },
     kick: {
       label: 'Kick',
@@ -31,7 +31,7 @@
       emptyTitle: 'No Kick channels added',
       emptyText: "Type a Kick name above. Channels you follow on Kick show up on their own while you're logged in to kick.com.",
       hint: 'Live Kick channels show under Favorites in your Twitch sidebar.',
-      file: 'nf-twitch-kick',
+      file: 'nf-extension-kick',
     },
   };
 
