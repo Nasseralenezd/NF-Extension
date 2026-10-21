@@ -28,3 +28,10 @@ html.nftw-x-dim[data-theme='dark'],
 html.nftw-x-dim[data-theme='dark'] body {
   background-color: #15202b !important;
 }
+
+/* Tidy X (tidy.js): promoted posts and the side column parts you picked. */
+.nftw-x-ad,
+.nftw-x-hidden,
+html.nftw-x-nogrok [data-testid='GrokDrawer'] {
+  display: none !important;
+}

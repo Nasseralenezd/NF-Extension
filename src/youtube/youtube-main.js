@@ -1,16 +1,38 @@
 /*
- * YouTube scroll volume. This file runs in YouTube's own page context (not
- * the extension's), because only there does the player expose its volume
- * controls (setVolume, unMute...). Using them keeps YouTube's volume bar in
- * sync and makes YouTube remember the volume.
+ * YouTube scroll volume and auto quality. This file runs in YouTube's own page
+ * context (not the extension's), because only there does the player expose
+ * its controls (setVolume, setPlaybackQualityRange...). Using them keeps
+ * YouTube's own volume bar and quality menu in step.
  *
- * It has no access to the extension's settings: youtube.js puts the step on
- * <html data-nftw-yt-scroll="5"> while the feature is on, and removes it when
- * it's off.
+ * It has no access to the extension's settings: youtube.js puts them on
+ * <html> while a feature is on (data-nftw-yt-scroll="5",
+ * data-nftw-yt-quality="hd1080") and removes them when it's off.
  */
 (function () {
   const PLAYER = '#movie_player, .html5-video-player';
+  // YouTube's names for its qualities, best first.
+  const LEVELS = ['highres', 'hd2880', 'hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+  const QUALITY_MS = 1000;
   let hideTimer = 0;
+  let qualityDone = ''; // "video id|wanted quality" already applied
+
+  // Each new video (and each change of the setting) gets the chosen quality
+  // once; picking another quality in YouTube's menu afterwards sticks.
+  function applyQuality() {
+    const wanted = document.documentElement.dataset.nftwYtQuality;
+    if (!wanted) return;
+    const player = document.getElementById('movie_player');
+    if (typeof player?.getAvailableQualityLevels !== 'function') return;
+    const id = player.getVideoData?.()?.video_id;
+    const levels = player.getAvailableQualityLevels().filter((level) => LEVELS.includes(level)); // best first, without "auto"
+    if (!id || !levels.length || qualityDone === `${id}|${wanted}`) return;
+    // The chosen quality, or the best one below it.
+    const limit = wanted === 'highest' ? 0 : LEVELS.indexOf(wanted);
+    const pick = levels.find((level) => LEVELS.indexOf(level) >= limit) || levels[levels.length - 1];
+    player.setPlaybackQualityRange?.(pick, pick);
+    player.setPlaybackQuality?.(pick);
+    qualityDone = `${id}|${wanted}`;
+  }
 
   function onWheel(event) {
     const step = Number(document.documentElement.dataset.nftwYtScroll);
@@ -58,4 +80,5 @@
   }
 
   document.addEventListener('wheel', onWheel, { capture: true, passive: false });
+  setInterval(applyQuality, QUALITY_MS);
 })();

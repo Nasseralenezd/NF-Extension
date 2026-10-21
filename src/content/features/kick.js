@@ -67,7 +67,7 @@
     }
 
     const collapsed = NF.isSideNavCollapsed();
-    const next = JSON.stringify([collapsed, live.map((c) => [c.login, c.displayName, c.avatar, c.viewers, c.hideViewers, c.game, c.title])]);
+    const next = JSON.stringify([collapsed, !!settings.streamPreview, live.map((c) => [c.login, c.channelId, c.displayName, c.avatar, c.viewers, c.hideViewers, c.game, c.title])]);
     if (next !== signature) {
       signature = next;
       section.classList.toggle('nftw-collapsed', collapsed);
@@ -99,7 +99,15 @@
       (channel.title ? `\n${channel.title}` : '');
     return NF.el(
       'a',
-      { class: 'nftw-card', href: `https://kick.com/${channel.login}`, target: '_blank', rel: 'noopener noreferrer', title: tooltip },
+      {
+        class: 'nftw-card',
+        href: `https://kick.com/${channel.login}`,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        title: settings.streamPreview ? null : tooltip, // Stream preview's hover card replaces it
+        'data-title': channel.title || null,
+        'data-channel-id': channel.channelId || null,
+      },
       [
         channel.avatar
           ? NF.el('img', { class: 'nftw-avatar', src: channel.avatar, alt: '', loading: 'lazy' })

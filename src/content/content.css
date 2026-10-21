@@ -231,6 +231,14 @@
   box-shadow: 0 0 0 2px var(--color-background-base, #18181b), 0 0 0 4px var(--color-fill-live, #eb0400);
 }
 
+/* ---------- Stream preview (card styles: src/shared/preview.css) ---------- */
+
+/* Twitch's own hover card stays hidden while the preview is open. This is a
+   Twitch selector too; update it here if it changes. */
+.nftw-previewing .ReactModal__Overlay:has(.online-side-nav-channel-tooltip__body) {
+  display: none !important;
+}
+
 /* ---------- Star button on channel pages ---------- */
 
 .nftw-star-btn {
@@ -321,6 +329,115 @@
   stroke: currentColor;
   stroke-width: 1.8;
   stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+/* Audio compressor: purple while it's on. */
+.nftw-player-btn[aria-pressed='true'] {
+  color: #bf94ff;
+}
+
+/* DVR (dvr-main.js): a seek bar over the whole broadcast, as the first row of
+   the player controls. Time on the left, LIVE on the right. */
+.nftw-dvr {
+  padding: 0 10px 2px;
+  pointer-events: auto;
+}
+
+.nftw-dvr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+}
+
+.nftw-dvr-time {
+  color: #fff;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 3px #000;
+}
+
+.nftw-dvr-live {
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.nftw-dvr--live .nftw-dvr-live {
+  background: var(--color-fill-live, #eb0400);
+  cursor: default;
+}
+
+.nftw-dvr-track {
+  position: relative;
+  height: 14px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.nftw-dvr-track::before,
+.nftw-dvr-fill {
+  position: absolute;
+  left: 0;
+  top: 5px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.nftw-dvr-track::before {
+  content: '';
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.nftw-dvr-fill {
+  background: #9147ff;
+}
+
+.nftw-dvr-fill::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #9147ff;
+  opacity: 0;
+}
+
+.nftw-dvr-track:hover .nftw-dvr-fill::after {
+  opacity: 1;
+}
+
+.nftw-dvr-tip {
+  position: absolute;
+  bottom: 16px;
+  display: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.nftw-dvr-track:hover .nftw-dvr-tip {
+  display: block;
+}
+
+/* The channel keeps no recording: just the time and LIVE. */
+.nftw-dvr--fixed .nftw-dvr-track {
+  display: none;
 }
 
 .nftw-flash {

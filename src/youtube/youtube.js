@@ -8,6 +8,8 @@
  *                   in YouTube's own page context so it can use the player's
  *                   volume controls. This script only tells it the step (via a
  *                   data attribute on <html>), or removes it when turned off.
+ *   Auto quality  - the same way: youtube-main.js sets the quality, this
+ *                   script tells it which one.
  */
 (async function () {
   const store = globalThis.NFTwitchStorage;
@@ -22,6 +24,9 @@
 
     if (settings.ytScrollVolume) root.dataset.nftwYtScroll = String(settings.ytScrollStep || 1);
     else delete root.dataset.nftwYtScroll;
+
+    if (settings.ytQuality) root.dataset.nftwYtQuality = settings.ytQualityLevel || 'highest';
+    else delete root.dataset.nftwYtQuality;
   }
 
   apply(await store.getSettings());

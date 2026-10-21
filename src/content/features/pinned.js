@@ -58,7 +58,7 @@
     if (after !== anchor) anchor.before(section);
 
     const collapsed = NF.isSideNavCollapsed();
-    const next = JSON.stringify([collapsed, live.map((u) => [u.login, u.displayName, u.avatar, u.viewers, u.game, u.title])]);
+    const next = JSON.stringify([collapsed, !!settings.streamPreview, live.map((u) => [u.login, u.displayName, u.avatar, u.viewers, u.game, u.title])]);
     if (next !== signature) {
       signature = next;
       section.classList.toggle('nftw-collapsed', collapsed);
@@ -86,16 +86,26 @@
   function card(user) {
     const viewers = NF.formatViewers(user.viewers);
     const tooltip = `${user.displayName} · ${user.game || 'Live'} · ${viewers} viewers` + (user.title ? `\n${user.title}` : '');
-    return NF.el('a', { class: 'nftw-card', href: `/${user.login}`, title: tooltip, onclick: (e) => open(e, user.login) }, [
-      NF.el('img', { class: 'nftw-avatar', src: user.avatar, alt: '', loading: 'lazy' }),
-      NF.el('div', { class: 'nftw-meta' }, [
-        NF.el('div', { class: 'nftw-row' }, [
-          NF.el('span', { class: 'nftw-name', text: user.displayName }),
-          NF.el('span', { class: 'nftw-viewers' }, [NF.el('span', { class: 'nftw-dot' }), viewers]),
+    return NF.el(
+      'a',
+      {
+        class: 'nftw-card',
+        href: `/${user.login}`,
+        title: settings.streamPreview ? null : tooltip, // Stream preview's hover card replaces it
+        'data-title': user.title || null,
+        onclick: (e) => open(e, user.login),
+      },
+      [
+        NF.el('img', { class: 'nftw-avatar', src: user.avatar, alt: '', loading: 'lazy' }),
+        NF.el('div', { class: 'nftw-meta' }, [
+          NF.el('div', { class: 'nftw-row' }, [
+            NF.el('span', { class: 'nftw-name', text: user.displayName }),
+            NF.el('span', { class: 'nftw-viewers' }, [NF.el('span', { class: 'nftw-dot' }), viewers]),
+          ]),
+          NF.el('div', { class: 'nftw-game', text: user.game }),
         ]),
-        NF.el('div', { class: 'nftw-game', text: user.game }),
-      ]),
-    ]);
+      ]
+    );
   }
 
   // Plain click: switch channel inside Twitch. Ctrl/middle click: new tab as usual.

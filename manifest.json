@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NF Extension",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Pin your favorite Twitch and Kick streamers in the Twitch sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.",
   "homepage_url": "https://github.com/Nasseralenezd/NF-Extension",
   "minimum_chrome_version": "111",
@@ -45,17 +45,37 @@
         "src/content/features/sidebarClutter.js",
         "src/content/features/starButton.js",
         "src/content/features/scrollVolume.js",
+        "src/content/features/audioCompressor.js",
         "src/content/features/autoQuality.js",
         "src/content/features/autoTheater.js",
+        "src/content/features/dvr.js",
+        "src/content/features/autoRefresh.js",
+        "src/content/features/frontPageAutoplay.js",
         "src/content/features/shortcuts.js",
         "src/content/features/autoClaim.js",
         "src/content/features/cleanChat.js",
+        "src/shared/preview.js",
+        "src/content/features/streamPreview.js",
+        "src/shared/fullscreenChat.js",
+        "src/content/features/fullscreenChat.js",
         "src/content/main.js"
       ],
       "css": [
         "src/content/content.css",
-        "src/shared/osd.css"
+        "src/shared/osd.css",
+        "src/shared/preview.css",
+        "src/shared/fullscreenChat.css"
       ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.twitch.tv/*"
+      ],
+      "js": [
+        "src/content/dvr-main.js"
+      ],
+      "world": "MAIN",
       "run_at": "document_idle"
     },
     {
@@ -66,10 +86,17 @@
         "src/shared/features.js",
         "src/shared/storage.js",
         "src/kick/scrollVolume.js",
-        "src/kick/quality.js"
+        "src/kick/quality.js",
+        "src/shared/preview.js",
+        "src/kick/preview.js",
+        "src/shared/fullscreenChat.js",
+        "src/kick/fullscreenChat.js",
+        "src/kick/sidebar.js"
       ],
       "css": [
         "src/shared/osd.css",
+        "src/shared/preview.css",
+        "src/shared/fullscreenChat.css",
         "src/kick/kick.css"
       ],
       "run_at": "document_idle"
@@ -107,7 +134,8 @@
       "js": [
         "src/shared/features.js",
         "src/shared/storage.js",
-        "src/twitter/dim.js"
+        "src/twitter/dim.js",
+        "src/twitter/tidy.js"
       ],
       "css": [
         "src/twitter/twitter.css"

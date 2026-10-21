@@ -54,18 +54,22 @@ function shape(user) {
   };
 }
 
-async function fetchBatch(logins) {
+async function gql(query, variables) {
   const res = await fetch(GQL_URL, {
     method: 'POST',
     headers: { 'Client-Id': CLIENT_ID, 'Content-Type': 'text/plain;charset=UTF-8' },
-    body: JSON.stringify({ query: QUERY, variables: { logins } }),
+    body: JSON.stringify({ query, variables }),
   });
   if (!res.ok) throw new Error(`Twitch answered ${res.status}`);
   const json = await res.json();
   if (!json.data) throw new Error(json.errors?.[0]?.message || 'Twitch sent no data');
+  return json.data;
+}
 
+async function fetchBatch(logins) {
+  const data = await gql(QUERY, { logins });
   const found = new Map();
-  for (const user of json.data.users || []) {
+  for (const user of data.users || []) {
     if (user) found.set(user.login.toLowerCase(), shape(user));
   }
   const at = Date.now();
@@ -104,6 +108,7 @@ function shapeKick(c) {
   const stream = c.livestream;
   return {
     login: c.slug,
+    channelId: c.id ?? null, // Kick's live thumbnails are addressed by this id
     displayName: c.user?.username || c.slug,
     avatar: c.user?.profile_pic || '',
     live: !!stream?.is_live,

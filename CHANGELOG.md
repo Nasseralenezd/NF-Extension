@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.7.0 — 2026-10-21
+
+All new features are off by default.
+
+- **Twitch**:
+  - **Stream preview**: rest the pointer on a live channel in the sidebar (★ Favorites, Kick, Followed or Live Channels) to see its live thumbnail, title, game and viewers. It replaces Twitch's own small hover card while it's open.
+  - **DVR**: a seek bar over the whole broadcast on live channels. Drag back to any moment, or use the arrow keys (10 seconds), without leaving the channel or its live chat; LIVE catches up. Needs a channel that keeps past broadcasts.
+  - **Audio compressor**: a player button that evens out loud and quiet moments.
+  - **Fullscreen chat**: chat over the right side of the video in fullscreen, see-through, still usable.
+  - **Auto refresh on player errors** #1000 to #5000.
+  - **Stop front-page autoplay** for the featured stream on Twitch's home page.
+- **Kick**:
+  - **Favorites on kick.com**: your live Kick channels in their own section above Following in kick.com's sidebar.
+  - **Only Following in the sidebar**: hides kick.com's other sidebar sections.
+  - **Stream preview** on kick.com's sidebar, and **Fullscreen chat** on Kick's player.
+- **YouTube**: **Auto quality** (Highest, 1080p, 720p or 480p).
+- **X**: **Hide promoted posts**, and **Hide sidebar clutter** (trends, Today's News, Who to follow, Premium, the Grok button).
+
 ## 1.6.0 — 2026-10-21
 
 - **A tab for each site in the popup**: Twitch, Kick, YouTube and Twitter, with each site's logo. Twitch and Kick keep their lists (Favorites, Channels) next to their features.

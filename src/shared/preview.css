@@ -1,0 +1,121 @@
+/*
+ * Stream preview's hover card (src/shared/preview.js), on twitch.tv and
+ * kick.com. Colors come from Twitch's CSS variables where they exist, with
+ * dark-theme fallbacks (used as-is on kick.com).
+ */
+.nftw-preview {
+  position: fixed;
+  z-index: 6000;
+  width: 320px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--color-background-base, #18181b);
+  color: var(--color-text-base, #efeff1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 0 1px var(--color-border-base, rgba(83, 83, 95, 0.48));
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-4px);
+  transition: opacity 0.12s ease, transform 0.12s ease, visibility 0s linear 0.12s;
+}
+
+.nftw-preview--on {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+}
+
+.nftw-preview-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--color-background-alt, #26262c);
+}
+
+.nftw-preview-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.nftw-preview--loaded .nftw-preview-thumb img {
+  opacity: 1;
+}
+
+.nftw-preview--noimage .nftw-preview-thumb::after {
+  content: 'No preview yet';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-alt-2, #adadb8);
+  font-size: 13px;
+}
+
+.nftw-preview-live,
+.nftw-preview-viewers {
+  position: absolute;
+  left: 8px;
+  padding: 0 5px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.nftw-preview-live {
+  top: 8px;
+  background: var(--color-fill-live, #eb0400);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.nftw-preview--kick .nftw-preview-live {
+  background: #53fc18;
+  color: #0b0e0f;
+}
+
+.nftw-preview-viewers {
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.65);
+  font-variant-numeric: tabular-nums;
+}
+
+.nftw-preview-info {
+  padding: 8px 10px 10px;
+}
+
+.nftw-preview-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.nftw-preview-sub {
+  overflow: hidden;
+  margin-top: 2px;
+  color: var(--color-text-alt-2, #adadb8);
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.nftw-preview-title:empty,
+.nftw-preview-viewers:empty {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nftw-preview,
+  .nftw-preview-thumb img {
+    transition: none;
+  }
+}

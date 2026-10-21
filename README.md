@@ -46,6 +46,7 @@ Features are listed by site, the same way the popup's tabs show them.
 |---|---|---|
 | **Pinned favorites** | A ★ Favorites section listing your favorites who are live right now, either at the top of the sidebar or just above Followed Channels. Sorted by viewers or by your own order, and optionally hidden from the Followed list so they don't show twice. Click the header to fold the section; it shows how many are live while folded. | On (Top, by viewers) |
 | **Auto-expand Followed** | Clicks "Show More" until every followed channel is listed. It can also open the sidebar when it starts collapsed. | On |
+| **Stream preview** | Rest the pointer on a live channel in the sidebar (★ Favorites, Kick, Followed or Live Channels) to see its live thumbnail, title, game and viewers. | Off |
 | **Hide For You** | Removes the For You block (stories, streaks) above your Followed list. | Off |
 | **Hide sidebar clutter** | Separate switches for sponsored cards in Followed, Live Channels, Viewers Also Watch and Recommended Categories. | Off |
 
@@ -58,6 +59,11 @@ Features are listed by site, the same way the popup's tabs show them.
 | **Auto quality** | Every channel starts at Source, 1080p, 720p or 480p, or the closest quality below. | Off |
 | **Auto theater mode** | Switches to theater mode when you open a channel. | Off |
 | **Shortcuts & screenshot** | Keyboard shortcuts (below) plus full-resolution PNG screenshots of the stream, with a camera button in the player controls. | Off |
+| **DVR (rewind live streams)** | A seek bar over the whole broadcast on live channels, with the time on the left and LIVE on the right. Drag or click back to any moment, or use <kbd>←</kbd> / <kbd>→</kbd> (10 seconds), and it plays from there in the same player, with live chat still beside it. LIVE catches up again. It plays Twitch's own recording of the broadcast, so the channel has to keep past broadcasts. | Off |
+| **Audio compressor** | A button in the player that evens out loud and quiet moments, so one volume works for the whole stream. Click it to turn it on or off; your choice is remembered. | Off |
+| **Fullscreen chat** | While the player is fullscreen, chat shows over the right side of the video, see-through, and you can still read, scroll and type. | Off |
+| **Auto refresh on player errors** | Reloads the page by itself when the player stops with error #1000, #2000, #3000, #4000 or #5000. It stops after a few tries in a row. | Off |
+| **Stop front-page autoplay** | The featured stream at the top of Twitch's home page stays paused until you press play. | Off |
 
 <p align="center">
   <img src="docs/screenshots/star-button.png" width="317" alt="The ★ button, gold when pinned, next to Twitch's Follow and Subscribe buttons"><br>
@@ -77,6 +83,10 @@ Features are listed by site, the same way the popup's tabs show them.
 |---|---|---|
 | **Kick channels** | A Kick section under Favorites in Twitch's sidebar, listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. Foldable like Favorites. | Off |
 | **Scroll volume** | On kick.com, the mouse wheel over the player changes the volume, from 1% to 20% per step. Kick's slider follows and Kick remembers the volume. | Off (1%) |
+| **Favorites on kick.com** | Your live Kick channels (the Channels list in the popup's Kick tab) get their own section above Following in kick.com's sidebar, drawn like Kick's own rows. Optionally hides them from the Following list. | Off |
+| **Only Following in the sidebar** | Hides kick.com's other sidebar sections (Recommended and the like), so it lists only the channels you follow. | Off |
+| **Stream preview** | Hover a channel in kick.com's sidebar to see its live thumbnail, title and viewers. | Off |
+| **Fullscreen chat** | While Kick's player is fullscreen, chat shows over the right side of the video, see-through, and you can still read, scroll and type. | Off |
 | **Keep high quality** | Every stream on kick.com plays at the highest quality you can watch (1080p60 when you're logged in), instead of Kick's Auto mode, which lowers it now and then. Qualities that need a Kick login are skipped, and a quality you pick yourself stays until you open another channel. | Off |
 
 ### YouTube
@@ -85,6 +95,7 @@ Features are listed by site, the same way the popup's tabs show them.
 |---|---|---|
 | **Classic grid** | 4, 5, 6, 7 or 8 videos per row on Home, Subscriptions and channel pages. | Off (5 per row) |
 | **Hide Shorts** | Removes Shorts shelves, Shorts in feeds and search results, the Shorts tab on channel pages and the Shorts menu entry. | Off |
+| **Auto quality** | Every video starts at the highest quality, 1080p, 720p or 480p (or the best one below it). Picking another quality in the player still works. | Off (Highest) |
 | **Scroll volume** | The mouse wheel over the video changes the volume, from 1% to 20% per step. YouTube's volume bar follows and remembers it. | Off (1%) |
 
 ### X (Twitter)
@@ -92,6 +103,8 @@ Features are listed by site, the same way the popup's tabs show them.
 | Feature | What it does | Default |
 |---|---|---|
 | **Dim mode** | Shows X's dark theme in the softer dark-blue Dim colors instead of pure black. Works while X is set to its dark (Lights out) theme. | Off |
+| **Hide promoted posts** | Removes ads (posts marked "Ad") from your timeline and replies. | Off |
+| **Hide sidebar clutter** | Separate switches for What's happening (trends), Today's News, Who to follow, Subscribe to Premium, and the floating Grok button. | Off |
 
 Features with sub-options have them all switched on, so a feature does something as soon as you enable it. Untick the parts you don't want.
 
@@ -114,6 +127,7 @@ These need **Shortcuts & screenshot** switched on. They work on any page with a 
 | <kbd>C</kbd> | Create a clip |
 | <kbd>S</kbd> | Save a screenshot (`channel_YYYY-MM-DD_HH-MM-SS.png`) |
 | Mouse wheel over the player | Volume up/down (with **Scroll volume** on) |
+| <kbd>←</kbd> / <kbd>→</kbd> on a live channel | Rewind or go ahead 10 seconds (with **DVR** on) |
 
 ## Installation
 
@@ -159,8 +173,8 @@ NF Extension has no account, no analytics and no tracking.
 - To show live status, viewer count, game and avatar, the extension sends the **names of your favorite channels** to Twitch (`gql.twitch.tv`, no cookies or sign-in) and the names on your Kick list to Kick (`kick.com`).
 - To include the channels you follow on Kick, it reads Kick's `session_token` login cookie in your browser and sends it **only to kick.com**, to request your followed channels. You can turn this off in the popup.
 - Your favorites and settings are stored in your browser's `chrome.storage.sync`. Looked-up channel data is cached for a few minutes in session storage.
-- Avatars load from Twitch's image servers. Screenshots and exports are saved only to your computer.
-- The kick.com, YouTube and X features work inside those pages only (layout, colors, volume, quality) and send nothing anywhere.
+- Avatars and Stream preview thumbnails load from Twitch's and Kick's image servers. Screenshots and exports are saved only to your computer.
+- The kick.com, YouTube and X features work inside those pages only (layout, colors, volume, quality) and send nothing anywhere else. DVR and Fullscreen chat use Twitch's and Kick's own servers, the same way their sites do.
 
 The full policy is in [PRIVACY.md](PRIVACY.md).
 
@@ -189,14 +203,17 @@ src/
   shared/
     features.js             Feature registry: names, groups, defaults, options
     storage.js              Settings and favorites storage, import parser
+    preview.js              Stream preview hover card (twitch.tv and kick.com)
+    fullscreenChat.js       Fullscreen chat overlay (twitch.tv and kick.com)
   content/                  Twitch
     dom.js                  Twitch selectors and shared page helpers
     main.js                 Starts and stops features from your settings
     content.css             Styles injected into Twitch
     features/               One file per feature
-  kick/                     kick.com: scroll volume, keep high quality
-  youtube/                  YouTube: grid, Shorts, scroll volume
-  twitter/                  X: Dim mode
+    dvr-main.js             DVR seek bar (runs in Twitch's page context, where the player can be reached)
+  kick/                     kick.com: sidebar, stream preview, fullscreen chat, scroll volume, quality
+  youtube/                  YouTube: grid, Shorts, quality, scroll volume
+  twitter/                  X: Dim mode, promoted posts, sidebar clutter
   popup/                    Toolbar popup: a tab per site, with Favorites and Features views
 ```
 

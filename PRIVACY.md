@@ -31,6 +31,10 @@ How Twitch and Kick handle these requests is covered by [Twitch's Privacy Notice
 
 When the extension shows channel avatars, your browser loads those images from Twitch's and Kick's image servers.
 
+With **Stream preview** on, resting the pointer on a live channel in Twitch's sidebar loads that channel's live thumbnail from Twitch's or Kick's image servers, without telling them which page you're on. For a channel in Twitch's own lists, its name also goes to Twitch's GraphQL endpoint (as above) to get the stream title. For a Kick channel that comes from your Kick follows, its name goes to kick.com once to find its thumbnail. On kick.com itself, hovering a channel in Kick's sidebar asks kick.com for that channel's details.
+
+With **DVR** on, a live channel's page asks Twitch's GraphQL endpoint (anonymously, as above) when the broadcast started and for its recording, and rewinding plays that recording from Twitch's video servers, as Twitch's own player does. **Fullscreen chat** shows the site's own pop-out chat (twitch.tv or kick.com) over the video. **Favorites on kick.com** looks up the names on your Kick list on kick.com, as the Kick section on Twitch does. **Auto refresh on player errors** keeps the times of its recent reloads in that tab's session storage, so it can stop if a stream keeps failing.
+
 The features on kick.com, YouTube and X make no network requests of their own. They only change the pages in your browser: Kick's volume and quality (chosen in Kick's own player, which remembers them), YouTube's grid, Shorts and volume (YouTube's own player remembers the volume), and X's colors.
 
 ## What the extension does not do
