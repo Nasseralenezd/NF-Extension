@@ -52,9 +52,9 @@
       section = build();
       signature = '';
     }
-    // The Kick section may sit right after us; that still counts as in place.
+    // The Kick and YouTube sections may sit right after us; that still counts as in place.
     let after = section.nextElementSibling;
-    if (after?.id === 'nftw-kick') after = after.nextElementSibling;
+    while (after?.id === 'nftw-kick' || after?.id === 'nftw-youtube') after = after.nextElementSibling;
     if (after !== anchor) anchor.before(section);
 
     const collapsed = NF.isSideNavCollapsed();

@@ -143,6 +143,27 @@
     return svg;
   };
 
+  /** YouTube's logo (the red play button), for the YouTube section header. */
+  NF.youtubeIcon = function (size = 14) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'nftw-youtube-logo');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('aria-hidden', 'true');
+    for (const [fill, d] of [
+      ['#ff0033', 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z'],
+      ['#fff', 'M9.545 15.568V8.432L15.818 12z'],
+    ]) {
+      const path = document.createElementNS(ns, 'path');
+      path.setAttribute('fill', fill);
+      path.setAttribute('d', d);
+      svg.append(path);
+    }
+    return svg;
+  };
+
   /** A small down arrow; CSS turns it sideways when a section is folded. */
   NF.chevronIcon = function () {
     const ns = 'http://www.w3.org/2000/svg';

@@ -3,15 +3,16 @@
  * across browsers signed in to the same account.
  *
  * Each platform has its own list of channel names in your own order:
- *   favorites      Twitch, e.g. ["lirik", "shroud"]
- *   kickFavorites  Kick, e.g. ["xqc"]
+ *   favorites         Twitch, e.g. ["lirik", "shroud"]
+ *   kickFavorites     Kick, e.g. ["xqc"]
+ *   youtubeFavorites  YouTube, e.g. ["@lofigirl", "UCBJycsmduvYEL83R_U4JriQ"] (handles or channel ids)
  * Sync storage allows 8 KB per key, which fits roughly 600 names per list.
  * Display names, avatars and live status are looked up on demand (see
  * background.js). Older versions stored Twitch favorites as [{ login, name }]
  * objects; those are still read.
  *
  * The functions below hand out [{ login, name }] so callers don't care, and
- * take an optional platform ('twitch' by default, or 'kick').
+ * take an optional platform ('twitch' by default, 'kick' or 'youtube').
  */
 (function (root) {
   const { defaultSettings } = root.NFTwitchFeatures;
@@ -20,7 +21,18 @@
   const PLATFORMS = {
     twitch: { key: 'favorites', site: /twitch\.tv\/([^/?#\s]+)/i, name: /^[a-z0-9_]{1,25}$/ },
     kick: { key: 'kickFavorites', site: /kick\.com\/([^/?#\s]+)/i, name: /^[a-z0-9_-]{1,32}$/ },
+    youtube: { key: 'youtubeFavorites', normalize: youtubeChannel },
   };
+
+  // "@Handle", "handle", a youtube.com/@handle or /channel/UC… link -> "@handle"
+  // or the "UC…" id (ids are case-sensitive, handles aren't).
+  function youtubeChannel(value) {
+    const url = value.match(/youtube\.com\/(?:channel\/(UC[\w-]{22})|(@[\w.-]+))/i);
+    if (url) value = url[1] || url[2];
+    if (/^UC[\w-]{22}$/.test(value)) return value;
+    const handle = value.replace(/^@/, '').toLowerCase();
+    return /^[\w.-]{3,30}$/.test(handle) ? `@${handle}` : null;
+  }
   const keyOf = (platform = 'twitch') => PLATFORMS[platform].key;
 
   async function getSettings() {
@@ -110,10 +122,11 @@
     });
   }
 
-  /** Accepts "name", "@name" or a channel URL (twitch.tv/… or kick.com/…). Returns a login or null. */
+  /** Accepts "name", "@name" or a channel URL (twitch.tv/…, kick.com/…, youtube.com/…). Returns a login or null. */
   function normalizeLogin(input, platform = 'twitch') {
     const rules = PLATFORMS[platform];
     let value = String(input || '').trim();
+    if (rules.normalize) return rules.normalize(value);
     const url = value.match(rules.site);
     if (url) value = url[1];
     value = value.replace(/^@/, '').toLowerCase();
@@ -164,7 +177,7 @@
     });
   }
 
-  /** Calls back with { settings?, favorites?, kickFavorites?, ui? } holding the new values that changed. */
+  /** Calls back with { settings?, favorites?, kickFavorites?, youtubeFavorites?, ui? } holding the new values that changed. */
   function onChange(callback) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
       const out = {};
@@ -172,6 +185,7 @@
         if (changes.settings) out.settings = changes.settings.newValue;
         if (changes.favorites) out.favorites = fromStored(changes.favorites.newValue);
         if (changes.kickFavorites) out.kickFavorites = fromStored(changes.kickFavorites.newValue);
+        if (changes.youtubeFavorites) out.youtubeFavorites = fromStored(changes.youtubeFavorites.newValue);
       } else if (areaName === 'local' && changes.ui) {
         out.ui = { folded: {}, ...(changes.ui.newValue || {}) };
       }

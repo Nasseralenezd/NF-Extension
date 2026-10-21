@@ -195,6 +195,20 @@
   background: #53fc18;
 }
 
+/* YouTube section: same cards, in YouTube's red. */
+.nftw-youtube-logo {
+  flex: none;
+  display: block;
+}
+
+.nftw-youtube .nftw-dot {
+  background: #ff0033;
+}
+
+.nftw-youtube.nftw-collapsed .nftw-avatar {
+  box-shadow: 0 0 0 2px var(--color-background-base, #18181b), 0 0 0 4px #ff0033;
+}
+
 .nftw-avatar--letter {
   display: inline-grid;
   place-items: center;

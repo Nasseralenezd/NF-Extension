@@ -313,6 +313,16 @@
 
     /* ---------- YouTube ---------- */
     {
+      id: 'ytLive',
+      platform: 'youtube',
+      group: 'twitchSidebar',
+      name: 'YouTube live channels',
+      description: 'Live YouTube channels get their own section under Kick in the Twitch sidebar: those on the Channels list in this tab, and the channels you subscribe to. Clicking one opens it on YouTube in a new tab.',
+      status: 'live',
+      default: false,
+      options: [{ id: 'ytSubs', type: 'toggle', label: 'Include channels I subscribe to on YouTube (when logged in to youtube.com)', default: true }],
+    },
+    {
       id: 'ytGrid',
       platform: 'youtube',
       group: 'ytFeed',

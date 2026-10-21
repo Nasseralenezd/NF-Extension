@@ -1,6 +1,6 @@
 /*
  * Stream preview on twitch.tv: resting the pointer on a live channel in the
- * sidebar (★ Favorites, Kick, and Twitch's own lists) opens a card with the
+ * sidebar (★ Favorites, Kick, YouTube, and Twitch's own lists) opens a card with the
  * stream's live thumbnail, title, game and viewers (see src/shared/preview.js).
  * It takes the place of Twitch's own, smaller hover card while it is open.
  */
@@ -14,6 +14,11 @@
   // What the sidebar link already says about the channel.
   function describe(link) {
     const text = (selector) => link.querySelector(selector)?.textContent.trim() || '';
+    if (link.closest('#nftw-youtube')) {
+      // YouTube's live thumbnail is 4:3 with bars, which the card's 16:9 crop removes.
+      const id = link.dataset.videoId;
+      return { kick: false, thumb: id ? `https://i.ytimg.com/vi/${id}/hqdefault_live.jpg` : null, name: text('.nftw-name'), game: text('.nftw-game'), viewers: text('.nftw-viewers'), title: link.dataset.title || '' };
+    }
     if (link.closest('#nftw-kick')) {
       const login = new URL(link.href).pathname.split('/')[1]?.toLowerCase();
       if (!login) return null;
@@ -66,7 +71,7 @@
   }
 
   const preview = globalThis.NFTwitchPreview.create({
-    links: '#nftw-favorites a.nftw-card, #nftw-kick a.nftw-card, a.side-nav-card__link, a.side-nav-card',
+    links: '#nftw-favorites a.nftw-card, #nftw-kick a.nftw-card, #nftw-youtube a.nftw-card, a.side-nav-card__link, a.side-nav-card',
     sidebar: (link) => link.closest(NF.SEL.sideNav),
     describe,
   });

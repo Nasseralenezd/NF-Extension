@@ -1,7 +1,7 @@
 /*
- * Popup: one tab per site (Twitch, Kick, YouTube, Twitter). Twitch and Kick
- * have a favorites list and a Features view; sites without features yet show
- * a "coming soon" page. Tabs and feature switches are generated from the
+ * Popup: one tab per site (Twitch, Kick, YouTube, Twitter). Twitch, Kick and
+ * YouTube have a channel list and a Features view; sites without features yet
+ * show a "coming soon" page. Tabs and feature switches are generated from the
  * registry in src/shared/features.js.
  */
 (async function () {
@@ -48,6 +48,17 @@
       hint: 'Live Kick channels show under Favorites in your Twitch sidebar.',
       file: 'nf-extension-kick',
     },
+    youtube: {
+      label: 'YouTube',
+      url: (login) => `https://www.youtube.com/${login.startsWith('UC') ? `channel/${login}` : login}`,
+      example: '@lofigirl',
+      site: 'youtube.com',
+      placeholder: 'YouTube @handle or channel link',
+      emptyTitle: 'No YouTube channels added',
+      emptyText: "Type a channel's @handle or paste its youtube.com link above. Channels you subscribe to show up on their own while you're logged in to youtube.com.",
+      hint: 'Live YouTube channels show under Kick in your Twitch sidebar.',
+      file: 'nf-extension-youtube',
+    },
   };
 
   // Per platform: the list (in your order) and looked-up channels
@@ -55,6 +66,7 @@
   const state = {
     twitch: { list: [], users: {} },
     kick: { list: [], users: {}, followed: undefined }, // followed: undefined = not checked yet
+    youtube: { list: [], users: {}, subscriptions: undefined }, // subscriptions: undefined = not checked yet
   };
   let platform = 'twitch'; // the selected site tab
   let view = recall('nftw-view') === 'features' ? 'features' : 'favorites';
@@ -114,15 +126,19 @@
   const displayName = (login, p = platform) => state[p].users[login]?.displayName || login;
 
   /**
-   * Looks channels up on a platform: { login: channel | null }. On Kick, a
-   * name Kick couldn't be asked about is left out (unknown, not missing).
-   * Resolves to null when nothing could be checked.
+   * Looks channels up on a platform: { login: channel | null }. On Kick and
+   * YouTube, a name the site couldn't be asked about is left out (unknown,
+   * not missing). Resolves to null when nothing could be checked.
    */
   async function lookup(logins, force = false, p = platform) {
     try {
       if (p === 'twitch') {
         const res = await chrome.runtime.sendMessage({ type: 'lookup', logins, force });
         return res?.ok ? res.users : null;
+      }
+      if (p === 'youtube') {
+        const res = await chrome.runtime.sendMessage({ type: 'youtube', channels: logins, force });
+        return res?.ok ? res.channels : null;
       }
       const res = await chrome.runtime.sendMessage({ type: 'kick', slugs: logins, followed: false, force });
       return res?.ok ? res.channels : null;
@@ -207,7 +223,7 @@
     }
     if (hasFeatures) renderFeatures();
     if (hasList) {
-      $('#view-favorites-label').textContent = next === 'kick' ? 'Channels' : 'Favorites';
+      $('#view-favorites-label').textContent = next === 'twitch' ? 'Favorites' : 'Channels';
       $('#add-input').placeholder = P().placeholder;
       $('label[for="add-input"]').textContent = P().placeholder;
       $('#fav-empty-title').textContent = P().emptyTitle;
@@ -216,6 +232,7 @@
       renderFavorites();
       refreshUsers();
       if (next === 'kick') refreshKickFollowed();
+      if (next === 'youtube') refreshYoutubeSubscriptions();
     }
     selectView(hasList ? view : 'features', !hasList);
   }
@@ -241,7 +258,7 @@
     }
     const { list, users } = cur();
     if (!list.length) {
-      summary.textContent = platform === 'kick' ? 'Kick channels in your Twitch sidebar' : 'Pin your favorite streamers';
+      summary.textContent = platform === 'twitch' ? 'Pin your favorite streamers' : `${siteLabel(platform)} channels in your Twitch sidebar`;
       return;
     }
     const liveCount = list.filter((f) => users[f.login]?.live).length;
@@ -258,12 +275,12 @@
     const { list } = cur();
     $('#fav-list').replaceChildren(...list.map(row));
     $('#fav-empty').hidden = list.length > 0;
-    $('#fav-hint').hidden = list.length < (platform === 'kick' ? 1 : 2);
+    $('#fav-hint').hidden = list.length < (platform === 'twitch' ? 2 : 1);
     $('#export-button').disabled = list.length === 0;
 
     $('#fav-count').textContent = list.length || '';
     renderSummary();
-    renderKickStatus();
+    renderFollowStatus();
   }
 
   function row(fav) {
@@ -277,7 +294,7 @@
           ? 'Offline'
           : '…';
 
-    const avatar = el('span', { class: 'avatar' }, user?.avatar ? el('img', { src: user.avatar, alt: '' }) : name[0]);
+    const avatar = el('span', { class: 'avatar' }, user?.avatar ? el('img', { src: user.avatar, alt: '' }) : name.replace(/^@/, '')[0]);
 
     return el('li', { class: 'fav' + (user?.live ? ' is-live' : ''), draggable: 'true', 'data-login': fav.login }, [
       el('button', { class: 'grip', type: 'button', title: 'Drag, or Alt + ↑ / ↓', 'aria-label': `Move ${name}`, onkeydown: (e) => moveWithKeys(e, fav.login) }, gripIcon()),
@@ -290,36 +307,62 @@
     ]);
   }
 
-  // Kick view only: whether channels you follow on Kick are included.
-  function renderKickStatus() {
-    const box = $('#kick-status');
-    box.hidden = platform !== 'kick';
-    if (box.hidden) return;
+  // Kick and YouTube views: whether the channels you follow (or subscribe to) there are included.
+  function renderFollowStatus() {
+    const box = $('#follow-status');
+    box.hidden = platform !== 'kick' && platform !== 'youtube';
+    if (!box.hidden) box.textContent = platform === 'kick' ? kickStatus() : youtubeStatus();
+  }
+
+  function kickStatus() {
     const followed = state.kick.followed;
-    let text;
-    if (!settings.kick) text = 'The Kick section is turned off. Turn on "Kick channels" in Features.';
-    else if (!settings.kickFollowed) text = 'Channels you follow on Kick are not included (Features → Kick channels).';
-    else if (followed === undefined) text = 'Checking the channels you follow on Kick…';
-    else if (followed.loggedIn === false) text = 'Log in to kick.com in this browser to also show the channels you follow there.';
-    else if (followed.loggedIn === null) text = "Couldn't reach Kick to get the channels you follow. It will try again.";
-    else {
-      const live = followed.channels.length; // the background only returns live follows
-      text = live
-        ? `${live} channel${live === 1 ? '' : 's'} you follow on Kick ${live === 1 ? 'is' : 'are'} live now and in your sidebar too.`
-        : 'None of the channels you follow on Kick are live right now.';
-    }
-    box.textContent = text;
+    if (!settings.kick) return 'The Kick section is turned off. Turn on "Kick channels" in Features.';
+    if (!settings.kickFollowed) return 'Channels you follow on Kick are not included (Features → Kick channels).';
+    if (followed === undefined) return 'Checking the channels you follow on Kick…';
+    if (followed.loggedIn === false) return 'Log in to kick.com in this browser to also show the channels you follow there.';
+    if (followed.loggedIn === null) return "Couldn't reach Kick to get the channels you follow. It will try again.";
+    const live = followed.channels.length; // the background only returns live follows
+    return live
+      ? `${live} channel${live === 1 ? '' : 's'} you follow on Kick ${live === 1 ? 'is' : 'are'} live now and in your sidebar too.`
+      : 'None of the channels you follow on Kick are live right now.';
+  }
+
+  function youtubeStatus() {
+    const subscribed = state.youtube.subscriptions;
+    if (!settings.ytLive) return 'The YouTube section is turned off. Turn on "YouTube live channels" in Features.';
+    if (!settings.ytSubs) return 'Channels you subscribe to on YouTube are not included (Features → YouTube live channels).';
+    if (subscribed === undefined) return 'Checking the channels you subscribe to on YouTube…';
+    if (subscribed.loggedIn === false) return 'Log in to youtube.com in this browser to also show the channels you subscribe to there.';
+    if (subscribed.loggedIn === null) return `Couldn't reach YouTube to get the channels you subscribe to${subscribed.error ? ` (${subscribed.error})` : ''}. It will try again.`;
+    const total = subscribed.total || 0; // how many subscriptions YouTube listed
+    if (!total) return "You're logged in to youtube.com, but YouTube lists no subscriptions for this account.";
+    const live = subscribed.channels.length; // the background only returns live subscriptions
+    const yours = `your ${total} YouTube subscription${total === 1 ? '' : 's'}`;
+    return live
+      ? `${live} of ${yours} ${live === 1 ? 'is' : 'are'} live now and in your sidebar too.`
+      : `None of ${yours} ${total === 1 ? 'is' : 'are'} live right now.`;
   }
 
   async function refreshKickFollowed() {
-    if (!settings.kick || !settings.kickFollowed) return renderKickStatus();
+    if (!settings.kick || !settings.kickFollowed) return renderFollowStatus();
     try {
       const res = await chrome.runtime.sendMessage({ type: 'kick', slugs: [], followed: true });
       state.kick.followed = res?.ok ? res.followed : { loggedIn: null, channels: [] };
     } catch {
       state.kick.followed = { loggedIn: null, channels: [] };
     }
-    renderKickStatus();
+    renderFollowStatus();
+  }
+
+  async function refreshYoutubeSubscriptions() {
+    if (!settings.ytLive || !settings.ytSubs) return renderFollowStatus();
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'youtube', channels: [], subscriptions: true });
+      state.youtube.subscriptions = res?.ok ? res.subscriptions : { loggedIn: null, channels: [] };
+    } catch {
+      state.youtube.subscriptions = { loggedIn: null, channels: [] };
+    }
+    renderFollowStatus();
   }
 
   function openChannel(login) {
@@ -637,7 +680,7 @@
   setupBackup();
   setupDrag();
 
-  [state.twitch.list, state.kick.list] = await Promise.all([store.getFavorites('twitch'), store.getFavorites('kick')]);
+  [state.twitch.list, state.kick.list, state.youtube.list] = await Promise.all([store.getFavorites('twitch'), store.getFavorites('kick'), store.getFavorites('youtube')]);
   const saved = recall('nftw-platform');
   selectSite(SITES.some(([id]) => id === saved) ? saved : 'twitch'); // renders the tab and looks its channels up
 
@@ -645,8 +688,9 @@
     if (change.settings) {
       settings = await store.getSettings();
       if (platform === 'kick') refreshKickFollowed();
+      if (platform === 'youtube') refreshYoutubeSubscriptions();
     }
-    for (const [key, p] of [['favorites', 'twitch'], ['kickFavorites', 'kick']]) {
+    for (const [key, p] of [['favorites', 'twitch'], ['kickFavorites', 'kick'], ['youtubeFavorites', 'youtube']]) {
       if (!change[key]) continue;
       state[p].list = change[key];
       if (p === platform) renderFavorites();

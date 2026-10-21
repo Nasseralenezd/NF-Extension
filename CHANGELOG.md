@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.0 — 2026-10-21
+
+- **YouTube live channels** (new, off by default): a YouTube section under Kick in Twitch's sidebar, listing the YouTube channels that are live, with viewers and category: the ones you add by `@handle` or link in the popup's new YouTube Channels list, plus the channels you subscribe to while you're logged in to youtube.com, on the account and channel you use there, brand-account channels included (you can turn that off). Stream preview works on them too.
+- New permissions: access to `youtube.com` for those lookups, and `declarativeNetRequestWithHostAccess`, because YouTube only answers them for requests from youtube.com. The `cookies` permission is now also used to read your youtube.com login, only for the subscriptions lookup. See PRIVACY.md.
+
 ## 1.7.0 — 2026-10-21
 
 All new features are off by default.

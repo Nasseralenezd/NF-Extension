@@ -37,6 +37,9 @@
     if (change.kickFavorites) {
       for (const id of running) NF.modules.get(id).onKickFavorites?.(change.kickFavorites);
     }
+    if (change.youtubeFavorites) {
+      for (const id of running) NF.modules.get(id).onYoutubeFavorites?.(change.youtubeFavorites);
+    }
     if (change.ui) {
       for (const id of running) NF.modules.get(id).onUi?.(change.ui);
     }

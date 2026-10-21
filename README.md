@@ -5,7 +5,7 @@
 <h1 align="center">NF Extension</h1>
 
 <p align="center">
-  Pin your favorite Twitch and Kick streamers to the top of Twitch's sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.
+  Pin your favorite Twitch, Kick and YouTube streamers to the top of Twitch's sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 
 ---
 
-NF Extension is a lightweight browser extension, built around [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of Twitch's sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for Twitch's sidebar, player and chat. It also has optional features for [kick.com](https://kick.com), [YouTube](https://www.youtube.com) and [X](https://x.com), all off until you turn them on.
+NF Extension is a lightweight browser extension, built around [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of Twitch's sidebar, shows which of your **Kick** and **YouTube** channels are live right below it, and adds a set of optional quality-of-life tweaks for Twitch's sidebar, player and chat. It also has optional features for [kick.com](https://kick.com), [YouTube](https://www.youtube.com) and [X](https://x.com), all off until you turn them on.
 
 Everything is controlled from the toolbar popup, which has a tab for each site. Changes apply to open tabs instantly, without a reload.
 
@@ -93,6 +93,7 @@ Features are listed by site, the same way the popup's tabs show them.
 
 | Feature | What it does | Default |
 |---|---|---|
+| **YouTube live channels** | A YouTube section under Kick in Twitch's sidebar, listing the YouTube channels that are live right now, with viewers and category: the ones you add in the popup, plus the ones you subscribe to while you're logged in to youtube.com. Clicking one opens the stream on YouTube in a new tab. Foldable like Favorites. | Off |
 | **Classic grid** | 4, 5, 6, 7 or 8 videos per row on Home, Subscriptions and channel pages. | Off (5 per row) |
 | **Hide Shorts** | Removes Shorts shelves, Shorts in feeds and search results, the Shorts tab on channel pages and the Shorts menu entry. | Off |
 | **Auto quality** | Every video starts at the highest quality, 1080p, 720p or 480p (or the best one below it). Picking another quality in the player still works. | Off (Highest) |
@@ -112,8 +113,9 @@ Features with sub-options have them all switched on, so a feature does something
 
 - **Add** a streamer with the ★ on their channel page, or type a name or paste a `twitch.tv` link in the popup.
 - **Kick:** in the popup's **Kick** tab, turn on **Kick channels** under Features (it's off by default), then add Kick names or `kick.com` links under Channels. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
+- **YouTube:** in the popup's **YouTube** tab, turn on **YouTube live channels** under Features (it's off by default), then add channels by `@handle` or `youtube.com` link under Channels. Channels you subscribe to on YouTube are included automatically while you're logged in to youtube.com in the same browser (you can turn that off).
 - **Reorder** by dragging, or with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> on a row's handle. Remove with one click, with Undo.
-- **Import / export** your Twitch or Kick list as a JSON file (see [Import format](#import-format)).
+- **Import / export** your Twitch, Kick or YouTube list as a JSON file (see [Import format](#import-format)).
 - Favorites and settings sync across browsers signed in to the same account (up to about 600 channels per list).
 
 ## Keyboard shortcuts
@@ -162,6 +164,7 @@ Download the latest release zip and replace your old folder with it (or run `git
 - `twitch.tv` links or `@name` entries, e.g. `["https://www.twitch.tv/lirik"]`
 - objects with a `login`, `slug`, `username`, `user_login`, `broadcaster_login`, `channel`, `name` or `displayName` field
 - for the Kick list, `kick.com` links instead of `twitch.tv` links
+- for the YouTube list, `@handles`, channel ids (`UC…`) or `youtube.com` channel links
 - any of the above wrapped in an object under `favorites`, `channels`, `streamers`, `users` or `list`
 
 When you already have favorites, you choose whether to add the new ones or replace your list. Channels that no longer exist on Twitch are skipped (as long as Twitch can be reached to check).
@@ -170,10 +173,11 @@ When you already have favorites, you choose whether to add the new ones or repla
 
 NF Extension has no account, no analytics and no tracking.
 
-- To show live status, viewer count, game and avatar, the extension sends the **names of your favorite channels** to Twitch (`gql.twitch.tv`, no cookies or sign-in) and the names on your Kick list to Kick (`kick.com`).
+- To show live status, viewer count, game and avatar, the extension sends the **names of your favorite channels** to Twitch (`gql.twitch.tv`, no cookies or sign-in), the names on your Kick list to Kick (`kick.com`), and the channels on your YouTube list to YouTube (`youtube.com`, without your YouTube cookies).
 - To include the channels you follow on Kick, it reads Kick's `session_token` login cookie in your browser and sends it **only to kick.com**, to request your followed channels. You can turn this off in the popup.
+- To include the channels you subscribe to on YouTube, it uses your YouTube login (YouTube's `SAPISID` login cookies) to ask youtube.com which account and channel you're using there, then makes the same request youtube.com's own sidebar makes to learn which of your subscriptions are live. Your login goes **only to youtube.com**. You can turn this off in the popup.
 - Your favorites and settings are stored in your browser's `chrome.storage.sync`. Looked-up channel data is cached for a few minutes in session storage.
-- Avatars and Stream preview thumbnails load from Twitch's and Kick's image servers. Screenshots and exports are saved only to your computer.
+- Avatars and Stream preview thumbnails load from Twitch's, Kick's and YouTube's image servers. Screenshots and exports are saved only to your computer.
 - The kick.com, YouTube and X features work inside those pages only (layout, colors, volume, quality) and send nothing anywhere else. DVR and Fullscreen chat use Twitch's and Kick's own servers, the same way their sites do.
 
 The full policy is in [PRIVACY.md](PRIVACY.md).
@@ -183,9 +187,11 @@ The full policy is in [PRIVACY.md](PRIVACY.md).
 | Permission | Why it's needed |
 |---|---|
 | `storage` | Save your favorites and settings |
-| `cookies` | Read your kick.com login, only to get the channels you follow on Kick |
+| `cookies` | Read your kick.com and youtube.com logins, only to get the channels you follow on Kick and the ones you subscribe to on YouTube |
 | `https://gql.twitch.tv/*` | Look up which Twitch favorites are live |
 | `https://kick.com/*` | Look up which Kick channels are live, and your followed Kick channels |
+| `https://www.youtube.com/*` | Look up which channels on your YouTube list, and which of your YouTube subscriptions, are live |
+| `declarativeNetRequestWithHostAccess` | YouTube only answers its live lookups for requests from youtube.com, so the extension marks its own YouTube lookups that way. Nothing else is changed. |
 | Content scripts on `https://www.twitch.tv/*` | Add the features to Twitch pages |
 | Content scripts on `https://kick.com/*` | Scroll volume and Keep high quality on Kick's player |
 | Content scripts on `https://www.youtube.com/*` | Classic grid, Hide Shorts and Scroll volume on YouTube |
@@ -199,7 +205,7 @@ Plain JavaScript and CSS (Manifest V3), with no build step and no dependencies.
 manifest.json
 icons/                      Extension icons (16, 48, 128 px)
 src/
-  background.js             Service worker: Twitch and Kick live-status lookups with a short cache
+  background.js             Service worker: Twitch, Kick and YouTube live-status lookups with a short cache
   shared/
     features.js             Feature registry: names, groups, defaults, options
     storage.js              Settings and favorites storage, import parser

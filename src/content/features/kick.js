@@ -63,7 +63,10 @@
     } else {
       const anchor = NF.favoritesAnchor(settings.pinnedPosition);
       if (!anchor) return;
-      if (section.nextElementSibling !== anchor) anchor.before(section);
+      // The YouTube section may sit right after us; that still counts as in place.
+      let after = section.nextElementSibling;
+      if (after?.id === 'nftw-youtube') after = after.nextElementSibling;
+      if (after !== anchor) anchor.before(section);
     }
 
     const collapsed = NF.isSideNavCollapsed();
