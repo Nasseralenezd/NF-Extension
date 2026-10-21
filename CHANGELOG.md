@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.1 — 2026-10-21
+
+- **Scroll volume** now works over Twitch extensions shown on the video (overlays and companion apps), which used to catch the wheel; lists inside those extensions still scroll. For this the extension runs a small script inside Twitch extensions on `ext-twitch.tv` that only passes the wheel to the Twitch page. See PRIVACY.md.
+
 ## 1.8.0 — 2026-10-21
 
 - **YouTube live channels** (new, off by default): a YouTube section under Kick in Twitch's sidebar, listing the YouTube channels that are live, with viewers and category: the ones you add by `@handle` or link in the popup's new YouTube Channels list, plus the channels you subscribe to while you're logged in to youtube.com, on the account and channel you use there, brand-account channels included (you can turn that off). Stream preview works on them too.

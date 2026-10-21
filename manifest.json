@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NF Extension",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Pin your favorite Twitch, Kick and YouTube streamers in the Twitch sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.",
   "homepage_url": "https://github.com/Nasseralenezd/NF-Extension",
   "minimum_chrome_version": "111",
@@ -80,6 +80,16 @@
       ],
       "world": "MAIN",
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.ext-twitch.tv/*"
+      ],
+      "js": [
+        "src/content/extension-frame.js"
+      ],
+      "all_frames": true,
+      "run_at": "document_start"
     },
     {
       "matches": [

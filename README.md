@@ -55,7 +55,7 @@ Features are listed by site, the same way the popup's tabs show them.
 | Feature | What it does | Default |
 |---|---|---|
 | **Star button** | A ★ next to Follow on channel pages pins or unpins that streamer. | On |
-| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step. Twitch remembers the volume as if you had used its own slider. | On (1%) |
+| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step, also over Twitch extensions shown on the video (lists inside them still scroll). Twitch remembers the volume as if you had used its own slider. | On (1%) |
 | **Auto quality** | Every channel starts at Source, 1080p, 720p or 480p, or the closest quality below. | Off |
 | **Auto theater mode** | Switches to theater mode when you open a channel. | Off |
 | **Shortcuts & screenshot** | Keyboard shortcuts (below) plus full-resolution PNG screenshots of the stream, with a camera button in the player controls. | Off |
@@ -193,6 +193,7 @@ The full policy is in [PRIVACY.md](PRIVACY.md).
 | `https://www.youtube.com/*` | Look up which channels on your YouTube list, and which of your YouTube subscriptions, are live |
 | `declarativeNetRequestWithHostAccess` | YouTube only answers its live lookups for requests from youtube.com, so the extension marks its own YouTube lookups that way. Nothing else is changed. |
 | Content scripts on `https://www.twitch.tv/*` | Add the features to Twitch pages |
+| Content scripts on `https://*.ext-twitch.tv/*` | Inside Twitch extensions shown on the video, pass the mouse wheel to the Twitch page for Scroll volume. Nothing else is read or changed there. |
 | Content scripts on `https://kick.com/*` | Scroll volume and Keep high quality on Kick's player |
 | Content scripts on `https://www.youtube.com/*` | Classic grid, Hide Shorts and Scroll volume on YouTube |
 | Content scripts on `https://x.com/*` and `https://twitter.com/*` | Dim mode on X |
@@ -217,6 +218,7 @@ src/
     content.css             Styles injected into Twitch
     features/               One file per feature
     dvr-main.js             DVR seek bar (runs in Twitch's page context, where the player can be reached)
+    extension-frame.js      Inside Twitch extensions on the video: passes the wheel on for Scroll volume
   kick/                     kick.com: sidebar, stream preview, fullscreen chat, scroll volume, quality
   youtube/                  YouTube: grid, Shorts, quality, scroll volume
   twitter/                  X: Dim mode, promoted posts, sidebar clutter

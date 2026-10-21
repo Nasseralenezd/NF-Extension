@@ -58,6 +58,7 @@ The features on kick.com, YouTube and X make no network requests of their own. T
 | `https://www.youtube.com/*` | Look up the live status of the channels on your YouTube list and of your YouTube subscriptions |
 | `declarativeNetRequestWithHostAccess` | Mark the extension's own YouTube lookups as coming from youtube.com, which YouTube requires. No other request is changed. |
 | Content scripts on `https://www.twitch.tv/*` | Add the extension's features to Twitch pages |
+| Content scripts on `https://*.ext-twitch.tv/*` | Inside Twitch extensions shown on the video (Twitch serves them from ext-twitch.tv): pass the mouse wheel to the Twitch page, so Scroll volume works over them. They read nothing, store nothing and send nothing anywhere else. |
 | Content scripts on `https://kick.com/*` | Scroll volume on Kick's player (it saves the new volume in Kick's own `volume` cookie, as Kick's slider does) and Keep high quality |
 | Content scripts on `https://www.youtube.com/*` | Classic grid, Hide Shorts and Scroll volume on YouTube |
 | Content scripts on `https://x.com/*` and `https://twitter.com/*` | Dim mode on X |

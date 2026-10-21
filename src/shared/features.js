@@ -124,7 +124,7 @@
       platform: 'twitch',
       group: 'player',
       name: 'Scroll volume',
-      description: 'Mouse wheel over the player turns the volume up or down.',
+      description: 'Mouse wheel over the player turns the volume up or down, also over Twitch extensions on the video.',
       status: 'live',
       default: true,
       options: [{ id: 'scrollStep', type: 'range', label: 'Step', min: 1, max: 20, unit: '%', default: 1 }],
