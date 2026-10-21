@@ -102,21 +102,27 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Tabs ---------- */
+/* ---------- Site tabs ---------- */
 
 .tabs {
   display: flex;
-  gap: 4px;
-  padding: 0 12px;
+  padding: 0 8px;
   border-bottom: 1px solid var(--border);
 }
 
 .tabs [role='tab'] {
   position: relative;
-  padding: 8px 8px 10px;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 4px 10px;
   border: 0;
   background: none;
   color: var(--muted);
+  font-size: 12.5px;
   font-weight: 600;
 }
 
@@ -131,12 +137,38 @@ button {
 .tabs [role='tab'][aria-selected='true']::after {
   content: '';
   position: absolute;
-  left: 8px;
-  right: 8px;
+  left: 6px;
+  right: 6px;
   bottom: -1px;
   height: 2px;
   border-radius: 2px;
-  background: var(--accent);
+  background: var(--site, var(--accent));
+}
+
+/* Each site's color: the tab underline, its letter mark, and its live dots. */
+[data-platform='twitch'] {
+  --site: #9147ff;
+}
+
+[data-platform='kick'] {
+  --site: #53fc18;
+}
+
+[data-platform='youtube'] {
+  --site: #ff3b3b;
+}
+
+[data-platform='twitter'] {
+  --site: #e7e9ea;
+}
+
+.site-icon {
+  flex: none;
+  display: block;
+}
+
+.soon-icon {
+  display: inline-flex;
 }
 
 .count {
@@ -159,14 +191,18 @@ main {
   padding: 12px 16px 14px;
 }
 
-/* ---------- Twitch / Kick switch ---------- */
+/* ---------- Favorites | Features switch ---------- */
 
-.platforms.segmented {
+.views.segmented {
   display: flex;
   margin-bottom: 10px;
 }
 
-.platforms button {
+.views[hidden] {
+  display: none;
+}
+
+.views button {
   flex: 1;
   display: inline-flex;
   align-items: center;
@@ -176,29 +212,40 @@ main {
   font-size: 13px;
 }
 
-.kick-mark {
-  display: inline-grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  background: #53fc18;
-  color: #0b0e0f;
-  font-size: 10px;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.platform-kick .live-dot {
+body[data-platform='kick'] .live-dot {
   background: #53fc18;
 }
 
-.platform-kick .fav.is-live .avatar {
+body[data-platform='kick'] .fav.is-live .avatar {
   box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px #53fc18;
 }
 
 .kick-status {
   margin-top: 10px;
+}
+
+/* ---------- Coming soon page (sites without features yet) ---------- */
+
+.coming {
+  padding: 22px 6px 8px;
+  text-align: center;
+}
+
+.coming-title {
+  margin: 12px 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.coming-text {
+  max-width: 250px;
+  margin: 0 auto;
+  color: var(--muted);
+}
+
+.coming .soon-list {
+  margin-top: 16px;
+  text-align: left;
 }
 
 /* ---------- Add form ---------- */

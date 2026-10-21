@@ -1,7 +1,7 @@
 /*
  * Scroll volume on kick.com: the mouse wheel over Kick's player turns the
- * volume up or down, using the same "Scroll volume" switch and step as on
- * Twitch (plus its "Also on kick.com" option). Kick's own volume slider
+ * volume up or down, with its own switch and step in the popup's Kick tab
+ * ("Scroll volume"). Kick's own volume slider
  * follows the video, and the new volume is saved in Kick's "volume" cookie,
  * as Kick's slider does, so it sticks after a reload.
  */
@@ -26,7 +26,7 @@
 
   function onWheel(event) {
     if (!alive()) return document.removeEventListener('wheel', onWheel, { capture: true }); // extension was reloaded
-    if (!settings.scrollVolume || !settings.scrollVolumeKick) return;
+    if (!settings.scrollVolumeKick) return;
     if (!event.deltaY || event.ctrlKey) return; // Ctrl + wheel is browser zoom
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -40,7 +40,7 @@
     event.preventDefault();
     event.stopPropagation();
 
-    const step = settings.scrollStep / 100;
+    const step = settings.scrollStepKick / 100;
     const now = Date.now();
     const current = now - last.at < BURST_MS ? last.value : video.muted ? 0 : video.volume;
     const next = Math.min(1, Math.max(0, Math.round((current + (event.deltaY < 0 ? step : -step)) * 100) / 100));

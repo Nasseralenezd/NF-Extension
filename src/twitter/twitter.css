@@ -1,0 +1,30 @@
+/*
+ * X Dim mode. X's dark theme is pure black and built from color variables
+ * (--x-bg-primary, --x-neutral-1000, ...). While Dim mode is on (class on
+ * <html>, set by dim.js), the dark theme's variables get the classic Dim
+ * palette instead. X's light theme is left alone.
+ */
+html.nftw-x-dim[data-theme='dark'],
+html.nftw-x-dim [data-theme='dark'],
+html.nftw-x-dim .dark-theme {
+  --x-black: #15202b !important;
+  --x-bg-primary: #15202b !important;
+  --x-bg-secondary: #1e2732 !important;
+  --x-bg-tertiary: #273340 !important;
+  --x-bg-modal: #15202b !important;
+  --x-bg-sheets: #1e2732 !important;
+  --x-neutral-1100: #10171e !important;
+  --x-neutral-1000: #1e2732 !important;
+  --x-neutral-900: #273340 !important;
+  --x-neutral-800: #38444d !important;
+  --x-neutral-700: #4b5c6b !important;
+  --x-btn-secondary: #273340 !important;
+  --x-btn-secondary-hover: #2f3d4c !important;
+  --x-btn-secondary-pressed: #38444d !important;
+  --x-overlay-normal: rgba(91, 112, 131, 0.4) !important;
+}
+
+html.nftw-x-dim[data-theme='dark'],
+html.nftw-x-dim[data-theme='dark'] body {
+  background-color: #15202b !important;
+}

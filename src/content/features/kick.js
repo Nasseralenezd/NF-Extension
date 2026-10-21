@@ -79,7 +79,7 @@
 
   function build() {
     return NF.el('div', { id: SECTION_ID, class: 'nftw-section nftw-kick', role: 'group', 'aria-label': 'Kick' }, [
-      NF.sectionHeader(NF.el('span', { class: 'nftw-kick-logo', 'aria-hidden': 'true', text: 'K' }), 'Kick', toggleFold),
+      NF.sectionHeader(NF.kickIcon(14), 'Kick', toggleFold),
       NF.el('div', { class: 'nftw-list' }),
     ]);
   }

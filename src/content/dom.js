@@ -128,6 +128,21 @@
     }
   };
 
+  /** Kick's logo (the green K), for the Kick section header. */
+  NF.kickIcon = function (size = 14) {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'nftw-kick-logo');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', 'M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z');
+    svg.append(path);
+    return svg;
+  };
+
   /** A small down arrow; CSS turns it sideways when a section is folded. */
   NF.chevronIcon = function () {
     const ns = 'http://www.w3.org/2000/svg';

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.6.0 — 2026-10-21
+
+- **A tab for each site in the popup**: Twitch, Kick, YouTube and Twitter, with each site's logo. Twitch and Kick keep their lists (Favorites, Channels) next to their features.
+- **YouTube** (new, all off by default):
+  - **Classic grid**: 4, 5, 6, 7 or 8 videos per row on Home, Subscriptions and channel pages.
+  - **Hide Shorts**: Shorts shelves, Shorts in feeds and search results, the channel Shorts tab and the Shorts menu entry.
+  - **Scroll volume** over the video; YouTube's volume bar follows and remembers it.
+- **X / Twitter** (new, off by default): **Dim mode** shows X's dark theme in the softer dark-blue Dim colors instead of pure black.
+- **Kick**:
+  - **Keep high quality** (new, off by default): every stream on kick.com plays at the highest quality you can watch, instead of Kick's Auto mode, which lowers it now and then.
+  - **Scroll volume on kick.com** is now its own switch in the Kick tab, with its own step, and off by default. If it stops working after the update, turn it on there.
+  - The Kick section in Twitch's sidebar shows Kick's logo.
+- The extension now asks for access to youtube.com and x.com, for the new features there. They send nothing anywhere; see PRIVACY.md.
+- Needs Chromium 111 or newer (was 102).
+
 ## 1.5.0 — 2026-10-21
 
 - **Collapsible sections**: click the ★ Favorites or Kick header to fold the section away. While folded it shows how many channels are live, and it stays folded after a reload.

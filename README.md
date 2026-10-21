@@ -5,7 +5,7 @@
 <h1 align="center">NF Extension</h1>
 
 <p align="center">
-  Pin your favorite Twitch and Kick streamers to the top of Twitch's sidebar, and tidy up the rest of the site.
+  Pin your favorite Twitch and Kick streamers to the top of Twitch's sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.
 </p>
 
 <p align="center">
@@ -17,15 +17,15 @@
 
 ---
 
-NF Extension is a lightweight browser extension for [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of the sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for the sidebar, the player and chat.
+NF Extension is a lightweight browser extension, built around [twitch.tv](https://www.twitch.tv). It keeps the streamers you care about in their own **★ Favorites** section of Twitch's sidebar, shows which of your **Kick** channels are live right below it, and adds a set of optional quality-of-life tweaks for Twitch's sidebar, player and chat. It also has optional features for [kick.com](https://kick.com), [YouTube](https://www.youtube.com) and [X](https://x.com), all off until you turn them on.
 
-Everything is controlled from the toolbar popup, and changes apply to open Twitch tabs instantly, without a reload.
+Everything is controlled from the toolbar popup, which has a tab for each site. Changes apply to open tabs instantly, without a reload.
 
 <table align="center">
   <tr>
     <td align="center"><img src="docs/screenshots/sidebar-favorites.png" width="240" alt="The ★ Favorites section at the top of Twitch's sidebar, followed by the Kick section, both listing live channels with game and viewer count"></td>
-    <td align="center"><img src="docs/screenshots/popup-favorites.png" width="270" alt="The popup's Favorites tab: add box, import and export, and the list of favorites with live status"></td>
-    <td align="center"><img src="docs/screenshots/popup-features.png" width="270" alt="The popup's Features tab, with switches grouped under Sidebar"></td>
+    <td align="center"><img src="docs/screenshots/popup-favorites.png" width="270" alt="The popup's Twitch tab, Favorites view: site tabs on top, add box, import and export, and the list of favorites with live status"></td>
+    <td align="center"><img src="docs/screenshots/popup-features.png" width="270" alt="The popup's Twitch tab, Features view, with switches grouped under Sidebar"></td>
   </tr>
   <tr>
     <td align="center"><sub>★ Favorites and Kick in the sidebar</sub></td>
@@ -36,22 +36,25 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
 
 ## Features
 
-### Sidebar
+Features are listed by site, the same way the popup's tabs show them.
+
+### Twitch
+
+#### Sidebar
 
 | Feature | What it does | Default |
 |---|---|---|
 | **Pinned favorites** | A ★ Favorites section listing your favorites who are live right now, either at the top of the sidebar or just above Followed Channels. Sorted by viewers or by your own order, and optionally hidden from the Followed list so they don't show twice. Click the header to fold the section; it shows how many are live while folded. | On (Top, by viewers) |
-| **Kick channels** | A Kick section under Favorites listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. Foldable like Favorites. | Off |
 | **Auto-expand Followed** | Clicks "Show More" until every followed channel is listed. It can also open the sidebar when it starts collapsed. | On |
 | **Hide For You** | Removes the For You block (stories, streaks) above your Followed list. | Off |
 | **Hide sidebar clutter** | Separate switches for sponsored cards in Followed, Live Channels, Viewers Also Watch and Recommended Categories. | Off |
 
-### Channel & player
+#### Channel & player
 
 | Feature | What it does | Default |
 |---|---|---|
 | **Star button** | A ★ next to Follow on channel pages pins or unpins that streamer. | On |
-| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step. Works on Twitch and on kick.com, and each site remembers the volume as if you had used its own slider. | On (1%) |
+| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step. Twitch remembers the volume as if you had used its own slider. | On (1%) |
 | **Auto quality** | Every channel starts at Source, 1080p, 720p or 480p, or the closest quality below. | Off |
 | **Auto theater mode** | Switches to theater mode when you open a channel. | Off |
 | **Shortcuts & screenshot** | Keyboard shortcuts (below) plus full-resolution PNG screenshots of the stream, with a camera button in the player controls. | Off |
@@ -61,19 +64,41 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
   <sub>The ★ button next to Follow: gold means the streamer is pinned.</sub>
 </p>
 
-### Chat
+#### Chat
 
 | Feature | What it does | Default |
 |---|---|---|
 | **Auto-claim bonus points** | Clicks the channel points bonus chest for you while you watch. | Off |
 | **Cleaner chat** | Separate switches to hide badges, Bits (cheer emotes, leaderboard, button) and the banners on top of chat (hype train, predictions), plus compact line spacing. | Off |
 
+### Kick
+
+| Feature | What it does | Default |
+|---|---|---|
+| **Kick channels** | A Kick section under Favorites in Twitch's sidebar, listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. Foldable like Favorites. | Off |
+| **Scroll volume** | On kick.com, the mouse wheel over the player changes the volume, from 1% to 20% per step. Kick's slider follows and Kick remembers the volume. | Off (1%) |
+| **Keep high quality** | Every stream on kick.com plays at the highest quality you can watch (1080p60 when you're logged in), instead of Kick's Auto mode, which lowers it now and then. Qualities that need a Kick login are skipped, and a quality you pick yourself stays until you open another channel. | Off |
+
+### YouTube
+
+| Feature | What it does | Default |
+|---|---|---|
+| **Classic grid** | 4, 5, 6, 7 or 8 videos per row on Home, Subscriptions and channel pages. | Off (5 per row) |
+| **Hide Shorts** | Removes Shorts shelves, Shorts in feeds and search results, the Shorts tab on channel pages and the Shorts menu entry. | Off |
+| **Scroll volume** | The mouse wheel over the video changes the volume, from 1% to 20% per step. YouTube's volume bar follows and remembers it. | Off (1%) |
+
+### X (Twitter)
+
+| Feature | What it does | Default |
+|---|---|---|
+| **Dim mode** | Shows X's dark theme in the softer dark-blue Dim colors instead of pure black. Works while X is set to its dark (Lights out) theme. | Off |
+
 Features with sub-options have them all switched on, so a feature does something as soon as you enable it. Untick the parts you don't want.
 
 ### Favorites management
 
 - **Add** a streamer with the ★ on their channel page, or type a name or paste a `twitch.tv` link in the popup.
-- **Kick:** turn on **Kick channels** in the popup's Features tab (it's off by default), then switch the Favorites tab to **Kick** to add Kick names or `kick.com` links. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
+- **Kick:** in the popup's **Kick** tab, turn on **Kick channels** under Features (it's off by default), then add Kick names or `kick.com` links under Channels. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
 - **Reorder** by dragging, or with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> on a row's handle. Remove with one click, with Undo.
 - **Import / export** your Twitch or Kick list as a JSON file (see [Import format](#import-format)).
 - Favorites and settings sync across browsers signed in to the same account (up to about 600 channels per list).
@@ -104,11 +129,11 @@ The extension isn't on the Chrome Web Store yet. Installing it yourself takes ab
 4. Click **Load unpacked** and select the folder that contains `manifest.json`.
 5. Optional: pin NF Extension to the toolbar (puzzle-piece icon → pin).
 
-Requires a Chromium-based browser, version 102 or newer.
+Requires a Chromium-based browser, version 111 or newer.
 
 ### Updating
 
-Download the latest release zip and replace your old folder with it (or run `git pull`), click the reload icon on the extension's card in the extensions page, then refresh any open Twitch tabs.
+Download the latest release zip and replace your old folder with it (or run `git pull`), click the reload icon on the extension's card in the extensions page, then refresh any open Twitch, Kick, YouTube or X tabs.
 
 ## Import format
 
@@ -135,6 +160,7 @@ NF Extension has no account, no analytics and no tracking.
 - To include the channels you follow on Kick, it reads Kick's `session_token` login cookie in your browser and sends it **only to kick.com**, to request your followed channels. You can turn this off in the popup.
 - Your favorites and settings are stored in your browser's `chrome.storage.sync`. Looked-up channel data is cached for a few minutes in session storage.
 - Avatars load from Twitch's image servers. Screenshots and exports are saved only to your computer.
+- The kick.com, YouTube and X features work inside those pages only (layout, colors, volume, quality) and send nothing anywhere.
 
 The full policy is in [PRIVACY.md](PRIVACY.md).
 
@@ -147,7 +173,9 @@ The full policy is in [PRIVACY.md](PRIVACY.md).
 | `https://gql.twitch.tv/*` | Look up which Twitch favorites are live |
 | `https://kick.com/*` | Look up which Kick channels are live, and your followed Kick channels |
 | Content scripts on `https://www.twitch.tv/*` | Add the features to Twitch pages |
-| Content scripts on `https://kick.com/*` | Scroll volume on Kick's player |
+| Content scripts on `https://kick.com/*` | Scroll volume and Keep high quality on Kick's player |
+| Content scripts on `https://www.youtube.com/*` | Classic grid, Hide Shorts and Scroll volume on YouTube |
+| Content scripts on `https://x.com/*` and `https://twitter.com/*` | Dim mode on X |
 
 ## How it works
 
@@ -161,24 +189,28 @@ src/
   shared/
     features.js             Feature registry: names, groups, defaults, options
     storage.js              Settings and favorites storage, import parser
-  content/
+  content/                  Twitch
     dom.js                  Twitch selectors and shared page helpers
     main.js                 Starts and stops features from your settings
     content.css             Styles injected into Twitch
     features/               One file per feature
-  popup/                    Toolbar popup (Favorites, Features, Coming soon)
+  kick/                     kick.com: scroll volume, keep high quality
+  youtube/                  YouTube: grid, Shorts, scroll volume
+  twitter/                  X: Dim mode
+  popup/                    Toolbar popup: a tab per site, with Favorites and Features views
 ```
 
 ### Adding a feature
 
-1. Add an entry to `FEATURES` in [`src/shared/features.js`](src/shared/features.js). The popup builds the switch and its options from it, under the feature's group. `status: 'soon'` lists it under "Coming soon" instead.
-2. Create `src/content/features/<name>.js` that calls `NFTwitch.register('<id>', { start(settings), stop(), update?(settings), onFavorites?(list) })`.
-3. Add the file to `content_scripts[0].js` in [`manifest.json`](manifest.json), before `src/content/main.js`.
+1. Add an entry to `FEATURES` in [`src/shared/features.js`](src/shared/features.js) with its `platform` (`twitch`, `kick`, `youtube` or `twitter`). The popup builds the switch and its options from it, in that site's tab, under the feature's group. `status: 'soon'` lists it under "Coming soon" instead.
+2. For Twitch, create `src/content/features/<name>.js` that calls `NFTwitch.register('<id>', { start(settings), stop(), update?(settings), onFavorites?(list) })`, and add it to `content_scripts[0].js` in [`manifest.json`](manifest.json), before `src/content/main.js`.
+3. For the other sites, add a script to the site's folder that reads your settings with `NFTwitchStorage.getSettings()` and follows changes with `NFTwitchStorage.onChange()`, and list it in that site's `content_scripts` entry.
 
 ## Troubleshooting
 
 - **A feature stopped working after a Twitch update.** Twitch changes its page now and then. Every selector the extension depends on is in the `SEL` table at the top of [`src/content/dom.js`](src/content/dom.js), plus a few marked rules in [`content.css`](src/content/content.css). Please [open an issue](https://github.com/Nasseralenezd/NF-Extension/issues) with what broke.
-- **Nothing happens after updating the extension.** Refresh the Twitch tab; tabs opened before the update still run the old version.
+- **Nothing happens after updating the extension.** Refresh the site's tab; tabs opened before the update still run the old version.
+- **YouTube or X looks off.** Both sites change their pages often. The YouTube features live in [`src/youtube/`](src/youtube/) and Dim mode in [`src/twitter/`](src/twitter/); please [open an issue](https://github.com/Nasseralenezd/NF-Extension/issues) with a screenshot.
 - **Favorites show no live status.** Live status comes from Twitch's undocumented GraphQL endpoint (the same one BetterTTV and FrankerFaceZ use). If Twitch changes it, the Favorites section stops updating until the extension is fixed.
 - **The Kick section is empty or missing your follows.** Kick data comes from the JSON endpoints kick.com's own pages use (Kick's official API needs a developer key). Make sure you're logged in to kick.com in the same browser, and that **Include channels I follow on Kick** is on. Kick can change these endpoints or block them at any time.
 
@@ -188,7 +220,7 @@ See [CHANGELOG.md](CHANGELOG.md).
 
 ## Disclaimer
 
-NF Extension is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc. or Kick. Twitch and Kick are trademarks of their respective owners.
+NF Extension is an independent project. It is not affiliated with, endorsed by, or sponsored by Twitch Interactive, Inc., Kick, Google LLC (YouTube) or X Corp. Twitch, Kick, YouTube and X are trademarks of their respective owners.
 
 ## License
 

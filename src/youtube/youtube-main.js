@@ -1,0 +1,61 @@
+/*
+ * YouTube scroll volume. This file runs in YouTube's own page context (not
+ * the extension's), because only there does the player expose its volume
+ * controls (setVolume, unMute...). Using them keeps YouTube's volume bar in
+ * sync and makes YouTube remember the volume.
+ *
+ * It has no access to the extension's settings: youtube.js puts the step on
+ * <html data-nftw-yt-scroll="5"> while the feature is on, and removes it when
+ * it's off.
+ */
+(function () {
+  const PLAYER = '#movie_player, .html5-video-player';
+  let hideTimer = 0;
+
+  function onWheel(event) {
+    const step = Number(document.documentElement.dataset.nftwYtScroll);
+    if (!step || !event.deltaY || event.ctrlKey) return; // off, or Ctrl + wheel (browser zoom)
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const player = target.closest(PLAYER);
+    if (!player || typeof player.setVolume !== 'function') return;
+    // Let YouTube's own menus (quality, captions...) scroll normally.
+    if (target.closest('.ytp-popup, .ytp-settings-menu, .ytp-panel-menu')) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const current = player.isMuted() ? 0 : player.getVolume();
+    const next = Math.min(100, Math.max(0, Math.round(current + (event.deltaY < 0 ? step : -step))));
+    if (next > 0 && player.isMuted()) player.unMute();
+    player.setVolume(next);
+    if (next === 0) player.mute();
+    showOverlay(player, next);
+  }
+
+  // Same look as the volume overlay on Twitch and Kick (styles in osd.css).
+  function showOverlay(player, value) {
+    let overlay = player.querySelector('.nftw-volume');
+    if (!overlay) {
+      const span = (cls, child) => {
+        const node = document.createElement('span');
+        node.className = cls;
+        if (child) node.append(child);
+        return node;
+      };
+      overlay = document.createElement('div');
+      overlay.className = 'nftw-osd nftw-volume';
+      overlay.setAttribute('role', 'status');
+      overlay.append(span('nftw-osd-label'), span('nftw-osd-bar', span('nftw-osd-fill')), span('nftw-osd-value'));
+      player.append(overlay);
+    }
+    overlay.querySelector('.nftw-osd-label').textContent = value === 0 ? 'Muted' : 'Volume';
+    overlay.querySelector('.nftw-osd-fill').style.width = `${value}%`;
+    overlay.querySelector('.nftw-osd-value').textContent = `${value}%`;
+    overlay.classList.add('nftw-osd--on');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => overlay.classList.remove('nftw-osd--on'), 900);
+  }
+
+  document.addEventListener('wheel', onWheel, { capture: true, passive: false });
+})();

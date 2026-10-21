@@ -1,0 +1,6 @@
+/* Keep high quality: the player's menu stays invisible while quality.js picks a quality. */
+html.nftw-kick-quality-busy [data-radix-popper-content-wrapper],
+html.nftw-kick-quality-busy [role='menu'] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

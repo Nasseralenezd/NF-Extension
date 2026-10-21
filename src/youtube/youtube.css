@@ -1,0 +1,44 @@
+/*
+ * YouTube features. Every rule is behind a class on <html> that youtube.js
+ * sets from your settings, so nothing changes while a feature is off.
+ */
+
+/* ---------- Classic grid: N videos per row ---------- */
+
+/* YouTube sizes its grid from these variables (and keeps resetting them as
+   the window resizes), so they are overridden with !important. */
+html.nftw-yt-grid ytd-rich-grid-renderer {
+  --ytd-rich-grid-items-per-row: var(--nftw-yt-columns) !important;
+  --ytd-rich-grid-posts-per-row: var(--nftw-yt-columns) !important;
+  --ytd-rich-grid-item-min-width: 120px !important;
+  --ytd-rich-grid-item-max-width: 100% !important;
+}
+
+/* Smaller titles so the narrower cards stay tidy. */
+html.nftw-yt-grid ytd-rich-grid-renderer yt-lockup-metadata-view-model h3,
+html.nftw-yt-grid ytd-rich-grid-renderer #video-title {
+  font-size: 1.4rem !important;
+  line-height: 2rem !important;
+}
+
+/* ---------- Hide Shorts ---------- */
+
+/* Shorts shelves on Home, Subscriptions, search and watch pages */
+html.nftw-yt-noshorts ytd-rich-shelf-renderer[is-shorts],
+html.nftw-yt-noshorts ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+html.nftw-yt-noshorts ytd-reel-shelf-renderer,
+html.nftw-yt-noshorts grid-shelf-view-model:has(ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2),
+html.nftw-yt-noshorts ytd-item-section-renderer:has(> #contents > grid-shelf-view-model ytm-shorts-lockup-view-model-v2):not(:has(ytd-video-renderer)),
+/* single Shorts mixed into grids and result lists */
+html.nftw-yt-noshorts ytd-rich-item-renderer:has(ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2, a[href^='/shorts/']),
+html.nftw-yt-noshorts ytd-video-renderer:has(a[href^='/shorts/']),
+html.nftw-yt-noshorts ytd-grid-video-renderer:has(a[href^='/shorts/']),
+html.nftw-yt-noshorts ytd-compact-video-renderer:has(a[href^='/shorts/']),
+/* the Shorts tab on channel pages */
+html.nftw-yt-noshorts yt-tab-shape[tab-title='Shorts'],
+/* the Shorts entry in the side menu and the mini menu */
+html.nftw-yt-noshorts ytd-guide-entry-renderer:has(a[title='Shorts']),
+html.nftw-yt-noshorts ytd-mini-guide-entry-renderer[aria-label='Shorts'],
+html.nftw-yt-noshorts ytd-mini-guide-entry-renderer:has(a[title='Shorts']) {
+  display: none !important;
+}

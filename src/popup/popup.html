@@ -16,20 +16,17 @@
       <span id="version" class="version"></span>
     </header>
 
-    <nav class="tabs" role="tablist" aria-label="Sections">
-      <button role="tab" id="tab-favorites" aria-controls="panel-favorites" aria-selected="true">
-        Favorites <span id="fav-count" class="count"></span>
-      </button>
-      <button role="tab" id="tab-features" aria-controls="panel-features" aria-selected="false" tabindex="-1">Features</button>
-      <button role="tab" id="tab-soon" aria-controls="panel-soon" aria-selected="false" tabindex="-1">Coming soon</button>
-    </nav>
+    <!-- One tab per site; the tabs themselves are built from PLATFORMS in features.js. -->
+    <nav id="platform-tabs" class="tabs platform-tabs" role="tablist" aria-label="Sites"></nav>
 
-    <main>
-      <section id="panel-favorites" role="tabpanel" aria-labelledby="tab-favorites">
-        <div class="platforms segmented" role="group" aria-label="Platform">
-          <button type="button" data-platform="twitch" aria-pressed="true">Twitch <span id="count-twitch" class="count"></span></button>
-          <button type="button" data-platform="kick" aria-pressed="false"><span class="kick-mark" aria-hidden="true">K</span>Kick <span id="count-kick" class="count"></span></button>
-        </div>
+    <main id="panel" role="tabpanel">
+      <!-- Twitch and Kick: favorites or features -->
+      <div id="views" class="views segmented" role="group" aria-label="View">
+        <button type="button" data-view="favorites" aria-pressed="true"><span id="view-favorites-label">Favorites</span> <span id="fav-count" class="count"></span></button>
+        <button type="button" data-view="features" aria-pressed="false">Features</button>
+      </div>
+
+      <section id="view-favorites">
         <form id="add-form" class="add" autocomplete="off">
           <label class="sr-only" for="add-input">Streamer name or Twitch link</label>
           <input id="add-input" type="text" placeholder="Streamer name or twitch.tv link" spellcheck="false" />
@@ -71,12 +68,16 @@
         <p id="fav-hint" class="hint" hidden>Drag to reorder. Live favorites show in your Twitch sidebar.</p>
       </section>
 
-      <section id="panel-features" role="tabpanel" aria-labelledby="tab-features" hidden>
+      <section id="view-features" hidden>
         <div id="feature-list" class="feature-list"></div>
-        <p class="hint">Changes apply to open Twitch tabs right away.</p>
+        <p class="hint">Changes apply to open tabs right away.</p>
       </section>
 
-      <section id="panel-soon" role="tabpanel" aria-labelledby="tab-soon" hidden>
+      <!-- Sites without features yet -->
+      <section id="view-soon" class="coming" hidden>
+        <span id="soon-mark" class="soon-icon" aria-hidden="true"></span>
+        <p id="soon-title" class="coming-title"></p>
+        <p class="coming-text">New features for this site are on the way. They will show up right here.</p>
         <ul id="soon-list" class="soon-list"></ul>
       </section>
     </main>

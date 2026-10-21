@@ -183,16 +183,12 @@
 
 /* Kick section: same cards, in Kick's green. */
 .nftw-kick-logo {
-  display: inline-grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
-  background: #53fc18;
-  color: #0b0e0f;
-  font-size: 10px;
-  font-weight: 800;
-  line-height: 1;
+  flex: none;
+  display: block;
+}
+
+.nftw-kick-logo path {
+  fill: #53fc18;
 }
 
 .nftw-kick .nftw-dot {

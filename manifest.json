@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "NF Extension",
-  "version": "1.5.0",
-  "description": "Pin your favorite Twitch and Kick streamers in the Twitch sidebar, plus optional sidebar, player and chat tweaks.",
+  "version": "1.6.0",
+  "description": "Pin your favorite Twitch and Kick streamers in the Twitch sidebar, plus optional tweaks for Twitch, Kick, YouTube and X.",
   "homepage_url": "https://github.com/Nasseralenezd/NF-Extension",
-  "minimum_chrome_version": "102",
+  "minimum_chrome_version": "111",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
@@ -65,12 +65,54 @@
       "js": [
         "src/shared/features.js",
         "src/shared/storage.js",
-        "src/kick/scrollVolume.js"
+        "src/kick/scrollVolume.js",
+        "src/kick/quality.js"
       ],
       "css": [
-        "src/shared/osd.css"
+        "src/shared/osd.css",
+        "src/kick/kick.css"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/shared/features.js",
+        "src/shared/storage.js",
+        "src/youtube/youtube.js"
+      ],
+      "css": [
+        "src/shared/osd.css",
+        "src/youtube/youtube.css"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/youtube/youtube-main.js"
+      ],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": [
+        "src/shared/features.js",
+        "src/shared/storage.js",
+        "src/twitter/dim.js"
+      ],
+      "css": [
+        "src/twitter/twitter.css"
+      ],
+      "run_at": "document_start"
     }
   ]
 }

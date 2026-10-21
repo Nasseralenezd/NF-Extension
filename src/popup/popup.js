@@ -1,16 +1,31 @@
 /*
- * Popup: manage Twitch and Kick favorites, turn features on and off, see
- * what's coming. Feature toggles are generated from the registry in
- * src/shared/features.js.
+ * Popup: one tab per site (Twitch, Kick, YouTube, Twitter). Twitch and Kick
+ * have a favorites list and a Features view; sites without features yet show
+ * a "coming soon" page. Tabs and feature switches are generated from the
+ * registry in src/shared/features.js.
  */
 (async function () {
-  const { FEATURES, GROUPS } = NFTwitchFeatures;
+  const { FEATURES, PLATFORMS: SITES, GROUPS } = NFTwitchFeatures;
   const store = NFTwitchStorage;
   const $ = (selector) => document.querySelector(selector);
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  // Everything that differs between the Twitch and Kick lists.
-  const PLATFORMS = {
+  // Site logos (24 x 24 vector shapes) for the tabs and the coming-soon page.
+  const SITE_ICONS = {
+    twitch: [
+      ['polygon', { points: '20.571,11.143 17.143,14.571 13.714,14.571 10.714,17.571 10.714,14.571 6.857,14.571 6.857,1.714 20.571,1.714', fill: '#fff' }],
+      ['path', { fill: '#9146ff', d: 'M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z' }],
+    ],
+    kick: [['path', { fill: '#53fc18', d: 'M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z' }]],
+    youtube: [
+      ['path', { fill: '#ff0033', d: 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z' }],
+      ['path', { fill: '#fff', d: 'M9.545 15.568V8.432L15.818 12z' }],
+    ],
+    twitter: [['path', { fill: '#e7e9ea', d: 'M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z' }]],
+  };
+
+  // Sites with a favorites list, and everything that differs between them.
+  const LISTS = {
     twitch: {
       label: 'Twitch',
       url: (login) => `https://www.twitch.tv/${login}`,
@@ -41,14 +56,15 @@
     twitch: { list: [], users: {} },
     kick: { list: [], users: {}, followed: undefined }, // followed: undefined = not checked yet
   };
-  let platform = 'twitch';
+  let platform = 'twitch'; // the selected site tab
+  let view = recall('nftw-view') === 'features' ? 'features' : 'favorites';
   let settings = await store.getSettings();
   let messageTimer = 0;
   let dragging = false; // while a row is being dragged, re-renders wait
   let renderPending = false;
 
   const cur = () => state[platform];
-  const P = () => PLATFORMS[platform];
+  const P = () => LISTS[platform];
 
   /* ---------- helpers ---------- */
 
@@ -82,6 +98,11 @@
   const gripIcon = () =>
     icon(10, 16, '0 0 10 16', [[2, 2], [8, 2], [2, 8], [8, 8], [2, 14], [8, 14]].map(([cx, cy]) => ['circle', { cx, cy, r: 1.5 }]));
   const closeIcon = () => icon(12, 12, '0 0 12 12', [['path', { d: 'M2 2l8 8M10 2l-8 8' }]]);
+  const siteIcon = (id, size) => {
+    const svg = icon(size, size, '0 0 24 24', SITE_ICONS[id] || []);
+    svg.classList.add('site-icon');
+    return svg;
+  };
 
   function formatViewers(n) {
     const short = (x) => String(x >= 100 ? Math.round(x) : Math.round(x * 10) / 10);
@@ -134,59 +155,97 @@
     }
   }
 
-  /* ---------- tabs ---------- */
+  /* ---------- site tabs ---------- */
 
-  function setupTabs() {
-    const tabs = [...document.querySelectorAll('[role="tab"]')];
-    const select = (tab) => {
-      for (const t of tabs) {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        t.tabIndex = on ? 0 : -1;
-        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-      }
-      remember('nftw-tab', tab.id);
-    };
+  const siteLabel = (id) => SITES.find(([site]) => site === id)?.[1] || id;
+  const liveFeatures = (id) => FEATURES.filter((f) => f.platform === id && f.status === 'live');
+
+  function setupSiteTabs() {
+    const tabs = SITES.map(([id, label]) =>
+      el('button', { role: 'tab', id: `tab-${id}`, 'data-platform': id, 'aria-controls': 'panel', 'aria-selected': 'false', tabindex: '-1', onclick: () => selectSite(id) }, [
+        siteIcon(id, 16),
+        label,
+      ])
+    );
     tabs.forEach((tab, i) => {
-      tab.addEventListener('click', () => select(tab));
       tab.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
         const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
-        select(next);
+        selectSite(next.dataset.platform);
         next.focus();
       });
     });
-    const initial = tabs.find((t) => t.id === recall('nftw-tab'));
-    if (initial) select(initial);
-  }
-
-  /* ---------- Twitch / Kick switch ---------- */
-
-  function setupPlatforms() {
-    for (const button of document.querySelectorAll('[data-platform]')) {
-      button.addEventListener('click', () => selectPlatform(button.dataset.platform));
+    $('#platform-tabs').replaceChildren(...tabs);
+    for (const button of document.querySelectorAll('[data-view]')) {
+      button.addEventListener('click', () => selectView(button.dataset.view));
     }
-    selectPlatform(recall('nftw-platform') === 'kick' ? 'kick' : 'twitch');
   }
 
-  function selectPlatform(next) {
+  function selectSite(next) {
     platform = next;
     remember('nftw-platform', next);
-    for (const button of document.querySelectorAll('[data-platform]')) {
-      button.setAttribute('aria-pressed', String(button.dataset.platform === next));
+    for (const tab of document.querySelectorAll('#platform-tabs [role="tab"]')) {
+      const on = tab.dataset.platform === next;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;
     }
-    document.body.classList.toggle('platform-kick', next === 'kick');
-    const input = $('#add-input');
-    input.placeholder = P().placeholder;
-    $('label[for="add-input"]').textContent = P().placeholder;
-    $('#fav-empty-title').textContent = P().emptyTitle;
-    $('#fav-empty-text').textContent = P().emptyText;
-    $('#fav-hint').textContent = P().hint;
+    document.body.dataset.platform = next;
+    $('#panel').setAttribute('aria-labelledby', `tab-${next}`);
     $('#import-panel').hidden = true;
     $('#message').replaceChildren();
-    renderFavorites();
-    refreshUsers();
-    if (next === 'kick') refreshKickFollowed();
+
+    const hasList = next in LISTS;
+    const hasFeatures = liveFeatures(next).length > 0;
+    $('#views').hidden = !hasList || !hasFeatures;
+    $('#view-soon').hidden = hasList || hasFeatures;
+    if (!hasList && !hasFeatures) {
+      $('#view-favorites').hidden = true;
+      $('#view-features').hidden = true;
+      renderSoonPage();
+      renderSummary();
+      return;
+    }
+    if (hasFeatures) renderFeatures();
+    if (hasList) {
+      $('#view-favorites-label').textContent = next === 'kick' ? 'Channels' : 'Favorites';
+      $('#add-input').placeholder = P().placeholder;
+      $('label[for="add-input"]').textContent = P().placeholder;
+      $('#fav-empty-title').textContent = P().emptyTitle;
+      $('#fav-empty-text').textContent = P().emptyText;
+      $('#fav-hint').textContent = P().hint;
+      renderFavorites();
+      refreshUsers();
+      if (next === 'kick') refreshKickFollowed();
+    }
+    selectView(hasList ? view : 'features', !hasList);
+  }
+
+  // Favorites | Features inside a site tab. A site without a list only has Features.
+  function selectView(next, temporary = false) {
+    if (!temporary) {
+      view = next;
+      remember('nftw-view', next);
+    }
+    for (const button of document.querySelectorAll('[data-view]')) {
+      button.setAttribute('aria-pressed', String(button.dataset.view === next));
+    }
+    $('#view-favorites').hidden = next !== 'favorites';
+    $('#view-features').hidden = next !== 'features';
+  }
+
+  function renderSummary() {
+    const summary = $('#summary');
+    if (!(platform in LISTS)) {
+      summary.textContent = liveFeatures(platform).length ? `${siteLabel(platform)} tweaks` : `${siteLabel(platform)} features coming soon`;
+      return;
+    }
+    const { list, users } = cur();
+    if (!list.length) {
+      summary.textContent = platform === 'kick' ? 'Kick channels in your Twitch sidebar' : 'Pin your favorite streamers';
+      return;
+    }
+    const liveCount = list.filter((f) => users[f.login]?.live).length;
+    summary.replaceChildren(el('span', { class: 'live-num', text: String(liveCount) }), ` of ${list.length} live now`);
   }
 
   /* ---------- favorites ---------- */
@@ -196,23 +255,14 @@
       renderPending = true;
       return;
     }
-    const { list, users } = cur();
+    const { list } = cur();
     $('#fav-list').replaceChildren(...list.map(row));
     $('#fav-empty').hidden = list.length > 0;
     $('#fav-hint').hidden = list.length < (platform === 'kick' ? 1 : 2);
     $('#export-button').disabled = list.length === 0;
 
-    $('#count-twitch').textContent = state.twitch.list.length || '';
-    $('#count-kick').textContent = state.kick.list.length || '';
-    $('#fav-count').textContent = state.twitch.list.length + state.kick.list.length || '';
-
-    const summary = $('#summary');
-    if (!list.length) {
-      summary.textContent = platform === 'kick' ? 'Kick channels in your Twitch sidebar' : 'Pin your favorite streamers';
-    } else {
-      const liveCount = list.filter((f) => users[f.login]?.live).length;
-      summary.replaceChildren(el('span', { class: 'live-num', text: String(liveCount) }), ` of ${list.length} live now`);
-    }
+    $('#fav-count').textContent = list.length || '';
+    renderSummary();
     renderKickStatus();
   }
 
@@ -355,7 +405,7 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const p = platform;
-      const { label, example, site } = PLATFORMS[p];
+      const { label, example, site } = LISTS[p];
       const login = store.normalizeLogin(input.value, p);
       if (!login) return say(`Type a ${label} name like "${example}", or paste a ${site} link.`, 'error');
       if (state[p].list.some((f) => f.login === login)) return say(`${displayName(login, p)} is already in your ${label} list.`);
@@ -411,7 +461,7 @@
 
   async function importFile(file) {
     const p = platform;
-    const { label } = PLATFORMS[p];
+    const { label } = LISTS[p];
     $('#import-panel').hidden = true;
     let parsed;
     try {
@@ -454,7 +504,7 @@
   }
 
   async function runImport({ platform: p, logins, missing, invalid, checked }, replace) {
-    const { label } = PLATFORMS[p];
+    const { label } = LISTS[p];
     $('#import-panel').hidden = true;
     let added;
     try {
@@ -481,14 +531,17 @@
 
   /* ---------- features ---------- */
 
+  // The selected site's switches, grouped, then its planned features.
   function renderFeatures() {
-    const live = FEATURES.filter((f) => f.status === 'live');
+    const live = liveFeatures(platform);
+    const soon = FEATURES.filter((f) => f.platform === platform && f.status === 'soon');
     const blocks = [];
     for (const [group, title] of GROUPS) {
       const inGroup = live.filter((f) => f.group === group);
       if (!inGroup.length) continue;
       blocks.push(el('h2', { class: 'group-title', text: title }), ...inGroup.map((f) => featureCard(f)));
     }
+    if (soon.length) blocks.push(el('h2', { class: 'group-title', text: 'Coming soon' }), el('ul', { class: 'soon-list' }, soon.map(soonItem)));
     $('#feature-list').replaceChildren(...blocks);
   }
 
@@ -562,34 +615,31 @@
     return null;
   }
 
-  function renderSoon() {
-    const soon = FEATURES.filter((f) => f.status === 'soon');
-    $('#soon-list').replaceChildren(
-      ...soon.map((f) =>
-        el('li', { class: 'soon' }, [
-          el('span', { class: 'soon-text' }, [
-            el('span', { class: 'soon-name', text: f.name }),
-            el('span', { class: 'soon-desc', text: f.description }),
-          ]),
-          el('span', { class: 'pill', text: 'Planned' }),
-        ])
-      )
-    );
+  function soonItem(f) {
+    return el('li', { class: 'soon' }, [
+      el('span', { class: 'soon-text' }, [el('span', { class: 'soon-name', text: f.name }), el('span', { class: 'soon-desc', text: f.description })]),
+      el('span', { class: 'pill', text: 'Planned' }),
+    ]);
+  }
+
+  // A site with no features yet (YouTube, Twitter for now).
+  function renderSoonPage() {
+    $('#soon-mark').replaceChildren(siteIcon(platform, 44));
+    $('#soon-title').textContent = `${siteLabel(platform)} features are coming soon`;
+    $('#soon-list').replaceChildren(...FEATURES.filter((f) => f.platform === platform && f.status === 'soon').map(soonItem));
   }
 
   /* ---------- start ---------- */
 
   $('#version').textContent = `v${chrome.runtime.getManifest().version}`;
-  setupTabs();
+  setupSiteTabs();
   setupAddForm();
   setupBackup();
   setupDrag();
-  renderSoon();
-  renderFeatures();
 
   [state.twitch.list, state.kick.list] = await Promise.all([store.getFavorites('twitch'), store.getFavorites('kick')]);
-  setupPlatforms(); // renders the chosen list and looks its channels up
-  refreshUsers(platform === 'twitch' ? 'kick' : 'twitch'); // the other list, for its count and summary
+  const saved = recall('nftw-platform');
+  selectSite(SITES.some(([id]) => id === saved) ? saved : 'twitch'); // renders the tab and looks its channels up
 
   store.onChange(async (change) => {
     if (change.settings) {
@@ -600,9 +650,7 @@
       if (!change[key]) continue;
       state[p].list = change[key];
       if (p === platform) renderFavorites();
-      else $(`#count-${p}`).textContent = state[p].list.length || '';
       if (state[p].list.some((f) => !(f.login in state[p].users))) refreshUsers(p);
     }
-    $('#fav-count').textContent = state.twitch.list.length + state.kick.list.length || '';
   });
 })();
