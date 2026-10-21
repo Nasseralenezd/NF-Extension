@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "NF Extension",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Pin your favorite Twitch and Kick streamers in the Twitch sidebar, plus optional sidebar, player and chat tweaks.",
   "homepage_url": "https://github.com/Nasseralenezd/NF-Extension",
   "minimum_chrome_version": "102",
@@ -53,7 +53,22 @@
         "src/content/main.js"
       ],
       "css": [
-        "src/content/content.css"
+        "src/content/content.css",
+        "src/shared/osd.css"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://kick.com/*"
+      ],
+      "js": [
+        "src/shared/features.js",
+        "src/shared/storage.js",
+        "src/kick/scrollVolume.js"
+      ],
+      "css": [
+        "src/shared/osd.css"
       ],
       "run_at": "document_idle"
     }

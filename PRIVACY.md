@@ -46,6 +46,7 @@ When the extension shows channel avatars, your browser loads those images from T
 | `https://gql.twitch.tv/*` | Look up the live status of your Twitch favorites |
 | `https://kick.com/*` | Look up the live status of your Kick channels and the channels you follow on Kick |
 | Content scripts on `https://www.twitch.tv/*` | Add the extension's features to Twitch pages |
+| Content scripts on `https://kick.com/*` | Scroll volume on Kick's player (it saves the new volume in Kick's own `volume` cookie, as Kick's slider does) |
 
 ## Your control
 

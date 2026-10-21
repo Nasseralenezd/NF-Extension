@@ -40,8 +40,8 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
 
 | Feature | What it does | Default |
 |---|---|---|
-| **Pinned favorites** | A ★ Favorites section listing your favorites who are live right now, either at the top of the sidebar or just above Followed Channels. Sorted by viewers or by your own order, and optionally hidden from the Followed list so they don't show twice. | On (Top, by viewers) |
-| **Kick channels** | A Kick section under Favorites listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. | On |
+| **Pinned favorites** | A ★ Favorites section listing your favorites who are live right now, either at the top of the sidebar or just above Followed Channels. Sorted by viewers or by your own order, and optionally hidden from the Followed list so they don't show twice. Click the header to fold the section; it shows how many are live while folded. | On (Top, by viewers) |
+| **Kick channels** | A Kick section under Favorites listing the Kick channels that are live right now: the ones you add in the popup, plus the ones you follow on Kick while you're logged in to kick.com. Clicking one opens it on kick.com in a new tab. Foldable like Favorites. | Off |
 | **Auto-expand Followed** | Clicks "Show More" until every followed channel is listed. It can also open the sidebar when it starts collapsed. | On |
 | **Hide For You** | Removes the For You block (stories, streaks) above your Followed list. | Off |
 | **Hide sidebar clutter** | Separate switches for sponsored cards in Followed, Live Channels, Viewers Also Watch and Recommended Categories. | Off |
@@ -51,7 +51,7 @@ Everything is controlled from the toolbar popup, and changes apply to open Twitc
 | Feature | What it does | Default |
 |---|---|---|
 | **Star button** | A ★ next to Follow on channel pages pins or unpins that streamer. | On |
-| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step. It moves Twitch's own slider, so Twitch remembers the volume. | On (1%) |
+| **Scroll volume** | The mouse wheel over the player changes the volume, from 1% to 20% per step. Works on Twitch and on kick.com, and each site remembers the volume as if you had used its own slider. | On (1%) |
 | **Auto quality** | Every channel starts at Source, 1080p, 720p or 480p, or the closest quality below. | Off |
 | **Auto theater mode** | Switches to theater mode when you open a channel. | Off |
 | **Shortcuts & screenshot** | Keyboard shortcuts (below) plus full-resolution PNG screenshots of the stream, with a camera button in the player controls. | Off |
@@ -73,7 +73,7 @@ Features with sub-options have them all switched on, so a feature does something
 ### Favorites management
 
 - **Add** a streamer with the ★ on their channel page, or type a name or paste a `twitch.tv` link in the popup.
-- **Kick:** switch the popup's Favorites tab to **Kick** to add Kick names or `kick.com` links. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
+- **Kick:** turn on **Kick channels** in the popup's Features tab (it's off by default), then switch the Favorites tab to **Kick** to add Kick names or `kick.com` links. Channels you follow on Kick are included automatically while you're logged in to kick.com in the same browser (you can turn that off).
 - **Reorder** by dragging, or with <kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd> on a row's handle. Remove with one click, with Undo.
 - **Import / export** your Twitch or Kick list as a JSON file (see [Import format](#import-format)).
 - Favorites and settings sync across browsers signed in to the same account (up to about 600 channels per list).
@@ -147,6 +147,7 @@ The full policy is in [PRIVACY.md](PRIVACY.md).
 | `https://gql.twitch.tv/*` | Look up which Twitch favorites are live |
 | `https://kick.com/*` | Look up which Kick channels are live, and your followed Kick channels |
 | Content scripts on `https://www.twitch.tv/*` | Add the features to Twitch pages |
+| Content scripts on `https://kick.com/*` | Scroll volume on Kick's player |
 
 ## How it works
 

@@ -15,6 +15,7 @@
   let signature = '';
   let stopWatching = null;
   let refreshTimer = 0;
+  let folded = false; // section folded by clicking its header
 
   async function refresh(force = false) {
     try {
@@ -67,21 +68,26 @@
 
     const collapsed = NF.isSideNavCollapsed();
     const next = JSON.stringify([collapsed, live.map((c) => [c.login, c.displayName, c.avatar, c.viewers, c.hideViewers, c.game, c.title])]);
-    if (next === signature) return;
-    signature = next;
-    section.classList.toggle('nftw-collapsed', collapsed);
-    section.hidden = live.length === 0;
-    section.querySelector('.nftw-list').replaceChildren(...live.map(card));
+    if (next !== signature) {
+      signature = next;
+      section.classList.toggle('nftw-collapsed', collapsed);
+      section.hidden = live.length === 0;
+      section.querySelector('.nftw-list').replaceChildren(...live.map(card));
+    }
+    NF.applyFold(section, 'Kick', folded, live.length);
   }
 
   function build() {
     return NF.el('div', { id: SECTION_ID, class: 'nftw-section nftw-kick', role: 'group', 'aria-label': 'Kick' }, [
-      NF.el('div', { class: 'nftw-header' }, [
-        NF.el('span', { class: 'nftw-kick-logo', 'aria-hidden': 'true', text: 'K' }),
-        NF.el('h3', { class: 'nftw-header-title', text: 'Kick' }),
-      ]),
+      NF.sectionHeader(NF.el('span', { class: 'nftw-kick-logo', 'aria-hidden': 'true', text: 'K' }), 'Kick', toggleFold),
       NF.el('div', { class: 'nftw-list' }),
     ]);
+  }
+
+  function toggleFold() {
+    folded = !folded;
+    render();
+    NF.storage.setFolded('kick', folded).catch(() => {});
   }
 
   function card(channel) {
@@ -120,6 +126,10 @@
       stopWatching = NF.watchSideNav(render);
       refreshTimer = setInterval(refresh, REFRESH_MS);
       document.addEventListener('visibilitychange', onVisible);
+      NF.storage.getUi().then((ui) => {
+        folded = !!ui.folded.kick;
+        render();
+      }, () => {});
       refresh();
     },
     update(next) {
@@ -128,6 +138,10 @@
     },
     onKickFavorites() {
       refresh();
+    },
+    onUi(ui) {
+      folded = !!ui.folded.kick;
+      render();
     },
     stop() {
       active = false;

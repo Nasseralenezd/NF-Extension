@@ -1,0 +1,56 @@
+/*
+ * The small message shown on top of the video player (volume level,
+ * "Screenshot saved", ...). Used on twitch.tv and kick.com.
+ */
+
+.nftw-osd {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.nftw-osd--on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.nftw-osd-bar {
+  width: 96px;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.nftw-osd-fill {
+  display: block;
+  height: 100%;
+  background: #9147ff;
+}
+
+.nftw-osd-value {
+  min-width: 34px;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nftw-osd {
+    transition: none;
+  }
+}

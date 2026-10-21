@@ -128,6 +128,47 @@
     }
   };
 
+  /** A small down arrow; CSS turns it sideways when a section is folded. */
+  NF.chevronIcon = function () {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'nftw-chevron');
+    svg.setAttribute('viewBox', '0 0 12 12');
+    svg.setAttribute('width', '12');
+    svg.setAttribute('height', '12');
+    svg.setAttribute('aria-hidden', 'true');
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', 'M3 4.5l3 3 3-3');
+    svg.append(path);
+    return svg;
+  };
+
+  /**
+   * Header of our sidebar sections: icon, title, live count (shown while
+   * folded) and an arrow. Clicking it folds or unfolds the section.
+   */
+  NF.sectionHeader = function (icon, title, onToggle) {
+    return NF.el('button', { type: 'button', class: 'nftw-header', 'aria-expanded': 'true', title: `Hide ${title}`, onclick: onToggle }, [
+      icon,
+      NF.el('h3', { class: 'nftw-header-title', text: title }),
+      NF.el('span', { class: 'nftw-count' }),
+      NF.chevronIcon(),
+    ]);
+  };
+
+  /** Shows a section folded or open. Only touches the DOM when something changes. */
+  NF.applyFold = function (section, title, folded, liveCount) {
+    if (section.classList.contains('nftw-folded') !== folded) section.classList.toggle('nftw-folded', folded);
+    const header = section.querySelector('.nftw-header');
+    if (header && header.getAttribute('aria-expanded') !== String(!folded)) {
+      header.setAttribute('aria-expanded', String(!folded));
+      header.title = `${folded ? 'Show' : 'Hide'} ${title}`;
+    }
+    const count = section.querySelector('.nftw-count');
+    const text = folded ? String(liveCount) : '';
+    if (count && count.textContent !== text) count.textContent = text;
+  };
+
   NF.sideNav = () => NF.$(NF.SEL.sideNav);
   NF.isSideNavCollapsed = () => !!NF.$(NF.SEL.sideNavCollapsed);
 

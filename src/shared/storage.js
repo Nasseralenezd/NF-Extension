@@ -147,14 +147,34 @@
     return { logins: [...logins], invalid };
   }
 
-  /** Calls back with { settings?, favorites?, kickFavorites? } holding the new values that changed. */
+  /*
+   * Sidebar UI state that isn't a setting, such as which sections are folded.
+   * Kept in this browser only (chrome.storage.local): { folded: { favorites, kick } }.
+   */
+  async function getUi() {
+    const { ui } = await chrome.storage.local.get('ui');
+    return { ...(ui || {}), folded: { ...(ui?.folded || {}) } };
+  }
+
+  function setFolded(section, folded) {
+    return serial(async () => {
+      const ui = await getUi();
+      ui.folded[section] = folded;
+      await chrome.storage.local.set({ ui });
+    });
+  }
+
+  /** Calls back with { settings?, favorites?, kickFavorites?, ui? } holding the new values that changed. */
   function onChange(callback) {
     chrome.storage.onChanged.addListener((changes, areaName) => {
-      if (areaName !== 'sync') return;
       const out = {};
-      if (changes.settings) out.settings = changes.settings.newValue;
-      if (changes.favorites) out.favorites = fromStored(changes.favorites.newValue);
-      if (changes.kickFavorites) out.kickFavorites = fromStored(changes.kickFavorites.newValue);
+      if (areaName === 'sync') {
+        if (changes.settings) out.settings = changes.settings.newValue;
+        if (changes.favorites) out.favorites = fromStored(changes.favorites.newValue);
+        if (changes.kickFavorites) out.kickFavorites = fromStored(changes.kickFavorites.newValue);
+      } else if (areaName === 'local' && changes.ui) {
+        out.ui = { folded: {}, ...(changes.ui.newValue || {}) };
+      }
       if (Object.keys(out).length) callback(out);
     });
   }
@@ -171,6 +191,8 @@
     importFavorites,
     normalizeLogin,
     parseImport,
+    getUi,
+    setFolded,
     onChange,
   };
 })(globalThis);

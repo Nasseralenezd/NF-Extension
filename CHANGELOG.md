@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5.0 — 2026-10-21
+
+- **Collapsible sections**: click the ★ Favorites or Kick header to fold the section away. While folded it shows how many channels are live, and it stays folded after a reload.
+- **Scroll volume on kick.com**: the mouse wheel over Kick's player changes the volume too, with the same step as on Twitch. Kick's slider follows and Kick remembers the volume. Turn it off with "Also on kick.com" under Scroll volume.
+- **Kick channels is now off by default.** If you haven't switched it yourself, turn it on under Features → Kick channels.
+
 ## 1.4.1 — 2026-10-21
 
 - Renamed to **NF Extension**, now that it covers Kick too. The repository moved to github.com/Nasseralenezd/NF-Extension (old links redirect).

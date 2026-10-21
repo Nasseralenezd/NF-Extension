@@ -14,6 +14,7 @@
   let signature = '';
   let stopWatching = null;
   let refreshTimer = 0;
+  let folded = false; // section folded by clicking its header
 
   async function refresh(force = false) {
     try {
@@ -64,15 +65,22 @@
       section.hidden = live.length === 0;
       section.querySelector('.nftw-list').replaceChildren(...live.map(card));
     }
+    NF.applyFold(section, 'Favorites', folded, live.length);
     hideDuplicates();
   }
 
   function build() {
     const star = NF.el('span', { class: 'nftw-header-star' }, NF.starIcon(14));
     return NF.el('div', { id: SECTION_ID, class: 'nftw-section', role: 'group', 'aria-label': 'Favorites' }, [
-      NF.el('div', { class: 'nftw-header' }, [star, NF.el('h3', { class: 'nftw-header-title', text: 'Favorites' })]),
+      NF.sectionHeader(star, 'Favorites', toggleFold),
       NF.el('div', { class: 'nftw-list' }),
     ]);
+  }
+
+  function toggleFold() {
+    folded = !folded;
+    render();
+    NF.storage.setFolded('favorites', folded).catch(() => {});
   }
 
   function card(user) {
@@ -121,6 +129,10 @@
       stopWatching = NF.watchSideNav(render);
       refreshTimer = setInterval(refresh, REFRESH_MS);
       document.addEventListener('visibilitychange', onVisible);
+      NF.storage.getUi().then((ui) => {
+        folded = !!ui.folded.favorites;
+        render();
+      }, () => {});
       refresh();
     },
     update(next) {
@@ -129,6 +141,10 @@
     },
     onFavorites() {
       refresh();
+    },
+    onUi(ui) {
+      folded = !!ui.folded.favorites;
+      render();
     },
     stop() {
       active = false;
