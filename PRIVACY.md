@@ -27,6 +27,7 @@ The extension makes these network requests on its own, to learn whether channels
 - **Twitch:** the names in your Twitch favorites (and any name you type in the popup to add) go to Twitch's GraphQL endpoint at `https://gql.twitch.tv`. These requests are anonymous: they do not include your Twitch cookies, login or any other personal data.
 - **Kick channels:** the names in your Kick list go to `https://kick.com`, one channel at a time. These requests do not include your login.
 - **YouTube channels:** the handles or channel ids in your YouTube list go to `https://www.youtube.com`: each channel's page once a week (for its name and avatar), and every couple of minutes, while the YouTube section is on, YouTube's own small lookups for whether it is live, its title and viewers. These requests do not include your YouTube cookies or login. YouTube only answers those lookups for requests from youtube.com, so the extension marks its own lookups that way (with the `declarativeNetRequestWithHostAccess` permission); it changes no other request.
+- **Channels you follow on Twitch** (only when you use Import from Followed): the extension reads Twitch's `auth-token` login cookie from your browser and sends it **only to Twitch's GraphQL endpoint** (`https://gql.twitch.tv`), to get the list of channels you follow for you to pick from. The cookie is never stored by the extension, never sent anywhere else, and never shown or shared.
 - **Channels you follow on Kick** (only while "Include channels I follow on Kick" is on): the extension reads Kick's `session_token` login cookie from your browser and sends it **only to kick.com**, to request the list of channels you follow. The cookie is never stored by the extension, never sent anywhere else, and never shown or shared.
 - **Channels you subscribe to on YouTube** (only while "Include channels I subscribe to on YouTube" is on): the extension reads YouTube's `SAPISID` login cookies from your browser. It first asks youtube.com which of your accounts and channels you're using there (from the small settings file youtube.com uses itself), then signs one request to youtube.com as that account and channel: the same request YouTube's own sidebar makes to show which of your subscriptions are live. Your browser sends your youtube.com cookies with both. Your login goes **only to youtube.com**, and nothing from it is stored, shown or shared. For each subscribed channel that is live, the extension then asks YouTube what it's streaming, as for your YouTube list (without your login).
 
@@ -38,7 +39,7 @@ With **Stream preview** on, resting the pointer on a live channel in Twitch's si
 
 With **DVR** on, a live channel's page asks Twitch's GraphQL endpoint (anonymously, as above) when the broadcast started and for its recording, and rewinding plays that recording from Twitch's video servers, as Twitch's own player does. **Fullscreen chat** shows the site's own pop-out chat (twitch.tv or kick.com) over the video. **Favorites on kick.com** looks up the names on your Kick list on kick.com, as the Kick section on Twitch does. **Auto refresh on player errors** keeps the times of its recent reloads in that tab's session storage, so it can stop if a stream keeps failing.
 
-The features on kick.com, YouTube and X make no network requests of their own. They only change the pages in your browser: Kick's volume and quality (chosen in Kick's own player, which remembers them), YouTube's grid, Shorts and volume (YouTube's own player remembers the volume), and X's colors.
+The features on kick.com, YouTube and X make no network requests of their own. They only change the pages in your browser: Kick's volume, quality, theater mode and chat (chosen in Kick's own player, which remembers them), YouTube's grid, Shorts, watched videos, speed, volume, theater mode and end screens (YouTube's own player remembers the volume), and X's colors. **Autoplay off** turns off YouTube's own autoplay switch, which YouTube remembers (for your account when you're logged in), and **Auto theater mode** on YouTube uses YouTube's own theater button, which YouTube remembers in its `wide` cookie.
 
 ## What the extension does not do
 
@@ -46,21 +47,23 @@ The features on kick.com, YouTube and X make no network requests of their own. T
 - No data is sent to the author or any third party other than Twitch, Kick and YouTube, as described above.
 - It does not read, store or send your messages, account details or browsing history on Twitch, Kick, YouTube or X.
 - Screenshots and exported favorites files are saved only to your own computer.
+- Audio compressor and Volume boost change the sound only inside your browser. Chat filter words and the chat width are kept with your settings.
 
 ## Permissions
 
 | Permission | Purpose |
 |---|---|
 | `storage` | Save your favorites and settings |
-| `cookies` | Read your kick.com and youtube.com login cookies, only to request the channels you follow on Kick and the channels you subscribe to on YouTube |
-| `https://gql.twitch.tv/*` | Look up the live status of your Twitch favorites |
+| `cookies` | Read your twitch.tv, kick.com and youtube.com login cookies, only to request the channels you follow on Twitch (Import from Followed) and Kick, and the channels you subscribe to on YouTube |
+| `https://gql.twitch.tv/*` | Look up the live status of your Twitch favorites, and the channels you follow for Import from Followed |
+| `https://www.twitch.tv/*` | Read your Twitch login cookie, only for Import from Followed |
 | `https://kick.com/*` | Look up the live status of your Kick channels and the channels you follow on Kick |
 | `https://www.youtube.com/*` | Look up the live status of the channels on your YouTube list and of your YouTube subscriptions |
 | `declarativeNetRequestWithHostAccess` | Mark the extension's own YouTube lookups as coming from youtube.com, which YouTube requires. No other request is changed. |
 | Content scripts on `https://www.twitch.tv/*` | Add the extension's features to Twitch pages |
 | Content scripts on `https://*.ext-twitch.tv/*` | Inside Twitch extensions shown on the video (Twitch serves them from ext-twitch.tv): pass the mouse wheel to the Twitch page, so Scroll volume works over them. They read nothing, store nothing and send nothing anywhere else. |
-| Content scripts on `https://kick.com/*` | Scroll volume on Kick's player (it saves the new volume in Kick's own `volume` cookie, as Kick's slider does) and Keep high quality |
-| Content scripts on `https://www.youtube.com/*` | Classic grid, Hide Shorts and Scroll volume on YouTube |
+| Content scripts on `https://kick.com/*` | The kick.com features: the sidebar sections, Star button, Stream preview, Fullscreen chat, Scroll volume (it saves the new volume in Kick's own `volume` cookie, as Kick's slider does), Keep high quality, Auto theater mode, Cleaner chat, Audio compressor, Auto refresh and Shortcuts & screenshot |
+| Content scripts on `https://www.youtube.com/*` | The YouTube features: grid, Shorts, watched videos, quality, speed, volume, autoplay, end screens, compressor and theater mode |
 | Content scripts on `https://x.com/*` and `https://twitter.com/*` | Dim mode on X |
 
 ## Your control

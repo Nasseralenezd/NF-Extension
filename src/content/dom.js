@@ -103,6 +103,41 @@
     return NF.$$('button[aria-label]', root).find((b) => HOTKEY_LABEL[name].test(b.getAttribute('aria-label'))) || null;
   };
 
+  /**
+   * Calls fn(line) for every chat message on the page now and for each new
+   * one as it arrives, also after you switch channels. Returns a function
+   * that stops watching.
+   */
+  NF.watchChat = function (fn) {
+    const LINE = '.chat-line__message';
+    let watched = null;
+    const observer = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (!(node instanceof Element)) continue;
+          if (node.matches(LINE)) fn(node);
+          else node.querySelectorAll(LINE).forEach(fn);
+        }
+      }
+    });
+    // Twitch builds a new message list for each channel's chat.
+    const attach = () => {
+      const list = document.querySelector('[data-test-selector="chat-scrollable-area__message-container"]');
+      if (list === watched) return;
+      observer.disconnect();
+      watched = list;
+      if (!list) return;
+      list.querySelectorAll(LINE).forEach(fn);
+      observer.observe(list, { childList: true, subtree: true });
+    };
+    attach();
+    const timer = setInterval(attach, 1000);
+    return () => {
+      clearInterval(timer);
+      observer.disconnect();
+    };
+  };
+
   /** A short message in the middle-top of the player (reuses the volume overlay style). */
   NF.playerToast = function (player, text) {
     let toast = player.querySelector('.nftw-toast');

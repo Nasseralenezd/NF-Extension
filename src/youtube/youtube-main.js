@@ -1,12 +1,14 @@
 /*
- * YouTube scroll volume and auto quality. This file runs in YouTube's own page
- * context (not the extension's), because only there does the player expose
- * its controls (setVolume, setPlaybackQualityRange...). Using them keeps
- * YouTube's own volume bar and quality menu in step.
+ * YouTube scroll volume, auto quality and default playback speed. This file
+ * runs in YouTube's own page context (not the extension's), because only
+ * there does the player expose its controls (setVolume,
+ * setPlaybackQualityRange, setPlaybackRate...). Using them keeps YouTube's
+ * own volume bar, quality and speed menus in step.
  *
  * It has no access to the extension's settings: youtube.js puts them on
  * <html> while a feature is on (data-nftw-yt-scroll="5",
- * data-nftw-yt-quality="hd1080") and removes them when it's off.
+ * data-nftw-yt-quality="hd1080", data-nftw-yt-speed="1.5") and removes them
+ * when it's off.
  */
 (function () {
   const PLAYER = '#movie_player, .html5-video-player';
@@ -15,6 +17,26 @@
   const QUALITY_MS = 1000;
   let hideTimer = 0;
   let qualityDone = ''; // "video id|wanted quality" already applied
+  let speedDone = ''; // "video id|wanted speed" already applied
+
+  // Each new video starts at the chosen speed, once (live streams stay at
+  // normal speed); picking another speed in the player afterwards sticks.
+  function applySpeed() {
+    const wanted = Number(document.documentElement.dataset.nftwYtSpeed);
+    if (!wanted) return;
+    const player = document.getElementById('movie_player');
+    if (typeof player?.setPlaybackRate !== 'function' || player.classList.contains('ad-showing')) return;
+    const data = player.getVideoData?.();
+    if (!data?.video_id || speedDone === `${data.video_id}|${wanted}`) return;
+    if (data.isLive) {
+      speedDone = `${data.video_id}|${wanted}`;
+      return;
+    }
+    // Until the video is ready the player only offers normal speed.
+    if (!player.getAvailablePlaybackRates?.().includes(wanted)) return;
+    player.setPlaybackRate(wanted);
+    speedDone = `${data.video_id}|${wanted}`;
+  }
 
   // Each new video (and each change of the setting) gets the chosen quality
   // once; picking another quality in YouTube's menu afterwards sticks.
@@ -80,5 +102,8 @@
   }
 
   document.addEventListener('wheel', onWheel, { capture: true, passive: false });
-  setInterval(applyQuality, QUALITY_MS);
+  setInterval(() => {
+    applyQuality();
+    applySpeed();
+  }, QUALITY_MS);
 })();

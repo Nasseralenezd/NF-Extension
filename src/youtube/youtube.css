@@ -42,3 +42,53 @@ html.nftw-yt-noshorts ytd-mini-guide-entry-renderer[aria-label='Shorts'],
 html.nftw-yt-noshorts ytd-mini-guide-entry-renderer:has(a[title='Shorts']) {
   display: none !important;
 }
+
+/* ---------- Hide end-screen clutter ---------- */
+
+/* the cards over the last seconds of a video */
+html.nftw-yt-noendcards .ytp-ce-element,
+/* the grid of suggestions when a video ends */
+html.nftw-yt-noendgrid .videowall-endscreen {
+  display: none !important;
+}
+
+/* ---------- Hide watched videos (watched.js marks them) ---------- */
+
+html.nftw-yt-hidewatched ytd-browse[page-subtype='home'] .nftw-yt-watched,
+html.nftw-yt-hidewatched ytd-browse[page-subtype='subscriptions'] .nftw-yt-watched,
+html.nftw-yt-hidewatched ytd-watch-flexy #secondary .nftw-yt-watched {
+  display: none !important;
+}
+
+/* ---------- Audio compressor button (player.js) ---------- */
+
+/* It borrows YouTube's own player button class; only the line icon and the
+   red mark while it's on (like the captions button) are ours. */
+.nftw-yt-btn {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.nftw-yt-btn svg path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* YouTube's own rule for that mark (sized like under its captions button)
+   hides it on other buttons, so it's shown here on purpose. */
+.nftw-yt-btn[aria-pressed='true']::after {
+  content: '';
+  display: block !important;
+  position: absolute;
+  left: 12px;
+  bottom: 9px;
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: #f03;
+}

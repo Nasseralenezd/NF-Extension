@@ -497,6 +497,73 @@
   line-height: 20px !important;
 }
 
+/* ---------- Highlight favorites in chat, Chat filter (chatFavorites.js, chatFilter.js) ---------- */
+
+.chat-line__message.nftw-chat-fav {
+  background: rgba(255, 201, 60, 0.12) !important;
+  box-shadow: inset 3px 0 0 #ffc93c;
+}
+
+.chat-line__message.nftw-chat-flag {
+  background: rgba(145, 71, 255, 0.18) !important;
+  box-shadow: inset 3px 0 0 #9147ff;
+}
+
+.chat-line__message.nftw-chat-hide {
+  display: none !important;
+}
+
+/* ---------- Chat width (chatWidth.js) ----------
+   Twitch sizes chat, and the video beside it, with a fixed 34rem. While a
+   width is set, these use --nftw-chat-width instead. */
+
+html.nftw-chat-width .right-column--beside .channel-root__right-column,
+html.nftw-chat-width .right-column--theatre.right-column--beside {
+  width: var(--nftw-chat-width) !important;
+}
+
+html.nftw-chat-width .chat-shell__expanded {
+  min-width: var(--nftw-chat-width) !important;
+}
+
+html.nftw-chat-width .right-column--beside:not(.right-column--theatre) .channel-root__right-column--expanded {
+  transform: translateX(calc(-1 * var(--nftw-chat-width) * var(--writing-dir-flip, 1))) translateZ(0) !important;
+}
+
+html.nftw-chat-width .channel-page__video-player--theatre-mode {
+  width: calc(100% - var(--nftw-chat-width)) !important;
+}
+
+@media screen and (min-width: 920px) {
+  html.nftw-chat-width .channel-root__info--with-chat .channel-info-content,
+  html.nftw-chat-width .channel-root__player--with-chat,
+  html.nftw-chat-width .channel-root--hold-chat + .persistent-player,
+  html.nftw-chat-width .channel-root--watch-chat + .persistent-player {
+    width: calc(100% - var(--nftw-chat-width)) !important;
+  }
+}
+
+.nftw-chat-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -3px;
+  z-index: 1000;
+  width: 6px;
+  cursor: col-resize;
+}
+
+.nftw-chat-resizer:hover,
+html.nftw-chat-resizing .nftw-chat-resizer {
+  background: rgba(145, 71, 255, 0.6);
+}
+
+html.nftw-chat-resizing,
+html.nftw-chat-resizing * {
+  cursor: col-resize !important;
+  user-select: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nftw-osd,
   .nftw-star-btn,

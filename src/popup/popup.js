@@ -208,7 +208,9 @@
     document.body.dataset.platform = next;
     $('#panel').setAttribute('aria-labelledby', `tab-${next}`);
     $('#import-panel').hidden = true;
+    $('#followed-panel').hidden = true;
     $('#message').replaceChildren();
+    renderFollowedButton();
 
     const hasList = next in LISTS;
     const hasFeatures = liveFeatures(next).length > 0;
@@ -546,6 +548,100 @@
     $('#import-panel').hidden = false;
   }
 
+  /* ---------- Import from Followed (Twitch) ---------- */
+
+  let followed = []; // the channels you follow: { login, displayName, avatar }
+  const picked = new Set();
+
+  function setupFollowed() {
+    $('#followed-button').addEventListener('click', openFollowed);
+    $('#followed-filter').addEventListener('input', renderFollowed);
+    $('#followed-all').addEventListener('change', (e) => {
+      for (const f of visibleFollowed()) if (!isFavorite(f.login)) e.target.checked ? picked.add(f.login) : picked.delete(f.login);
+      renderFollowed();
+    });
+    $('#followed-add').addEventListener('click', addFollowed);
+    $('#followed-cancel').addEventListener('click', () => ($('#followed-panel').hidden = true));
+  }
+
+  function renderFollowedButton() {
+    $('#followed-button').hidden = platform !== 'twitch' || !settings.importFollowed;
+    if ($('#followed-button').hidden) $('#followed-panel').hidden = true;
+  }
+
+  const isFavorite = (login) => state.twitch.list.some((f) => f.login === login);
+
+  function visibleFollowed() {
+    const q = $('#followed-filter').value.trim().toLowerCase();
+    return q ? followed.filter((f) => f.login.includes(q) || f.displayName.toLowerCase().includes(q)) : followed;
+  }
+
+  async function openFollowed() {
+    $('#import-panel').hidden = true;
+    say('Getting the channels you follow on Twitch…');
+    let res = null;
+    try {
+      res = await chrome.runtime.sendMessage({ type: 'twitchFollowed' });
+    } catch {}
+    if (!res?.ok) return say(`Couldn't get the channels you follow from Twitch${res?.error ? ` (${res.error})` : ''}. Try again in a moment.`, 'error');
+    if (!res.loggedIn) return say('Log in to twitch.tv in this browser, then try again.', 'error');
+    if (!res.channels.length) return say("You don't follow any channels on Twitch yet.", 'error');
+    $('#message').replaceChildren();
+    followed = res.channels.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    picked.clear();
+    $('#followed-filter').value = '';
+    renderFollowed();
+    $('#followed-panel').hidden = false;
+    $('#followed-filter').focus();
+  }
+
+  function renderFollowed() {
+    const shown = visibleFollowed();
+    $('#followed-list').replaceChildren(
+      ...shown.map((f) => {
+        const pinned = isFavorite(f.login);
+        return el('li', {}, [
+          el('label', {}, [
+            el('input', {
+              type: 'checkbox',
+              checked: pinned || picked.has(f.login),
+              disabled: pinned,
+              onchange: (e) => {
+                e.target.checked ? picked.add(f.login) : picked.delete(f.login);
+                renderFollowedCount();
+              },
+            }),
+            el('span', { class: 'avatar' }, f.avatar ? el('img', { src: f.avatar, alt: '' }) : f.displayName[0]),
+            el('span', { class: 'name', text: f.displayName }),
+            pinned ? el('span', { class: 'pinned', text: '★ pinned' }) : null,
+          ]),
+        ]);
+      })
+    );
+    const open = shown.filter((f) => !isFavorite(f.login));
+    $('#followed-all').checked = open.length > 0 && open.every((f) => picked.has(f.login));
+    $('#followed-all').disabled = !open.length;
+    renderFollowedCount();
+  }
+
+  function renderFollowedCount() {
+    const add = $('#followed-add');
+    add.textContent = picked.size ? `Pin ${picked.size}` : 'Pin';
+    add.disabled = !picked.size;
+  }
+
+  async function addFollowed() {
+    const logins = followed.filter((f) => picked.has(f.login)).map((f) => f.login);
+    $('#followed-panel').hidden = true;
+    let added;
+    try {
+      added = await store.importFavorites(logins, { replace: false, platform: 'twitch' });
+    } catch (err) {
+      return say(`Couldn't save: ${err.message}`, 'error');
+    }
+    say(`Pinned ${added} channel${added === 1 ? '' : 's'} you follow.`, 'ok');
+  }
+
   async function runImport({ platform: p, logins, missing, invalid, checked }, replace) {
     const { label } = LISTS[p];
     $('#import-panel').hidden = true;
@@ -647,12 +743,35 @@
         type: 'range',
         min: option.min,
         max: option.max,
+        step: option.step,
         value,
         'aria-label': option.label,
         oninput: (e) => (output.textContent = `${e.target.value}${option.unit || ''}`),
         onchange: (e) => store.setSetting(option.id, Number(e.target.value)),
       });
       return el('div', { class: 'option' }, [option.label, el('span', { class: 'range' }, [input, output])]);
+    }
+
+    if (option.type === 'text') {
+      // Saved a moment after you stop typing, and when you leave the box.
+      let timer = 0;
+      const save = (input) => {
+        clearTimeout(timer);
+        store.setSetting(option.id, input.value.trim());
+      };
+      const input = el('input', {
+        class: 'text-field',
+        type: 'text',
+        value: value || '',
+        placeholder: option.placeholder,
+        spellcheck: 'false',
+        oninput: (e) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => save(e.target), 600);
+        },
+        onchange: (e) => save(e.target),
+      });
+      return el('label', { class: 'option option-text' }, [option.label, input]);
     }
 
     return null;
@@ -678,6 +797,7 @@
   setupSiteTabs();
   setupAddForm();
   setupBackup();
+  setupFollowed();
   setupDrag();
 
   [state.twitch.list, state.kick.list, state.youtube.list] = await Promise.all([store.getFavorites('twitch'), store.getFavorites('kick'), store.getFavorites('youtube')]);
@@ -687,6 +807,7 @@
   store.onChange(async (change) => {
     if (change.settings) {
       settings = await store.getSettings();
+      renderFollowedButton();
       if (platform === 'kick') refreshKickFollowed();
       if (platform === 'youtube') refreshYoutubeSubscriptions();
     }

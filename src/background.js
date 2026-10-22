@@ -54,10 +54,11 @@ function shape(user) {
   };
 }
 
-async function gql(query, variables) {
+// auth: your Twitch login ("OAuth <token>"), only for Import from Followed.
+async function gql(query, variables, auth = null) {
   const res = await fetch(GQL_URL, {
     method: 'POST',
-    headers: { 'Client-Id': CLIENT_ID, 'Content-Type': 'text/plain;charset=UTF-8' },
+    headers: { 'Client-Id': CLIENT_ID, 'Content-Type': 'text/plain;charset=UTF-8', ...(auth && { Authorization: auth }) },
     body: JSON.stringify({ query, variables }),
   });
   if (!res.ok) throw new Error(`Twitch answered ${res.status}`);
@@ -88,6 +89,41 @@ async function lookup(logins, force) {
   if (stale.length) persist();
 
   return Object.fromEntries(wanted.map((login) => [login, cache.get(login)?.user ?? null]));
+}
+
+/* Import from Followed: the channels you follow on Twitch, asked with the
+ * login twitch.tv keeps in its auth-token cookie. The token is read only
+ * when you open the picker and only ever sent to Twitch. */
+const FOLLOWS_QUERY = `query NFTwitchFollows($after: Cursor) {
+  currentUser {
+    follows(first: 100, after: $after) {
+      edges { cursor node { login displayName profileImageURL(width: 70) } }
+      pageInfo { hasNextPage }
+    }
+  }
+}`;
+const FOLLOWS_MAX_PAGES = 30; // up to 3,000 channels
+
+async function twitchFollowed() {
+  let token = null;
+  try {
+    token = (await chrome.cookies.get({ url: 'https://www.twitch.tv', name: 'auth-token' }))?.value || null;
+  } catch {}
+  if (!token) return { loggedIn: false, channels: [] };
+
+  const channels = [];
+  let after = null;
+  for (let page = 0; page < FOLLOWS_MAX_PAGES; page++) {
+    const { currentUser } = await gql(FOLLOWS_QUERY, { after }, `OAuth ${decodeURIComponent(token)}`);
+    if (!currentUser) return { loggedIn: false, channels: [] }; // the login expired
+    const { edges = [], pageInfo } = currentUser.follows || {};
+    for (const edge of edges) {
+      if (edge?.node?.login) channels.push({ login: edge.node.login.toLowerCase(), displayName: edge.node.displayName || edge.node.login, avatar: edge.node.profileImageURL || '' });
+      if (edge?.cursor) after = edge.cursor;
+    }
+    if (!pageInfo?.hasNextPage || !edges.length) break;
+  }
+  return { loggedIn: true, channels };
 }
 
 /* ---------- Kick ----------
@@ -481,6 +517,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true; // answer asynchronously
   };
   if (message?.type === 'lookup') return reply(lookup(message.logins || [], message.force).then((users) => ({ users })));
+  if (message?.type === 'twitchFollowed') return reply(twitchFollowed());
   if (message?.type === 'kick') return reply(kickLookup(message));
   if (message?.type === 'youtube') return reply(youtubeLookup(message));
 });

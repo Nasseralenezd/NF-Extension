@@ -108,6 +108,15 @@
         { id: 'hideRecCategories', type: 'toggle', label: 'Recommended Categories', default: true },
       ],
     },
+    {
+      id: 'importFollowed',
+      platform: 'twitch',
+      group: 'sidebar',
+      name: 'Import from Followed',
+      description: 'A "From Followed" button on the Favorites list in this popup: tick channels you follow on Twitch and pin them all at once. Needs you logged in to twitch.tv in this browser.',
+      status: 'live',
+      default: false,
+    },
 
     /* ---------- Twitch: channel & player ---------- */
     {
@@ -139,6 +148,16 @@
       default: false,
     },
     {
+      id: 'volumeBoost',
+      platform: 'twitch',
+      group: 'player',
+      name: 'Volume boost',
+      description: 'A button in the player that makes quiet streams louder than 100%, by the amount below.',
+      status: 'live',
+      default: false,
+      options: [{ id: 'boostLevel', type: 'range', label: 'Boost', min: 125, max: 300, step: 25, unit: '%', default: 150 }],
+    },
+    {
       id: 'autoQuality',
       platform: 'twitch',
       group: 'player',
@@ -167,6 +186,37 @@
       group: 'player',
       name: 'DVR (rewind live streams)',
       description: 'A seek bar over the whole broadcast on live channels: drag back to any moment, or use the arrow keys (10 s), and press LIVE to catch up. Needs a channel that keeps past broadcasts.',
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'catchUp',
+      platform: 'twitch',
+      group: 'player',
+      name: 'Catch up to live',
+      description: 'When a live stream falls behind after buffering, it jumps back to live instead of playing on behind.',
+      status: 'live',
+      default: false,
+      options: [
+        {
+          id: 'catchUpDelay',
+          type: 'select',
+          label: 'When behind by',
+          default: '5',
+          choices: [
+            ['3', '3 s'],
+            ['5', '5 s'],
+            ['10', '10 s'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'pipButton',
+      platform: 'twitch',
+      group: 'player',
+      name: 'Picture-in-picture button',
+      description: 'A button in the player that pops the stream out into a small window that stays on top of your other tabs and apps.',
       status: 'live',
       default: false,
     },
@@ -242,6 +292,37 @@
         { id: 'chatCompact', type: 'toggle', label: 'Compact lines', default: true },
       ],
     },
+    {
+      id: 'chatFavorites',
+      platform: 'twitch',
+      group: 'chat',
+      name: 'Highlight favorites in chat',
+      description: 'Messages from your favorite streamers stand out in any chat.',
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'chatFilter',
+      platform: 'twitch',
+      group: 'chat',
+      name: 'Chat filter',
+      description: 'Hides chat messages with the words you list, and highlights messages with others. Separate words or phrases with commas.',
+      status: 'live',
+      default: false,
+      options: [
+        { id: 'chatFilterHide', type: 'text', label: 'Hide messages with', placeholder: 'spoiler, giveaway', default: '' },
+        { id: 'chatFilterHighlight', type: 'text', label: 'Highlight messages with', placeholder: 'your name, a topic', default: '' },
+      ],
+    },
+    {
+      id: 'chatWidth',
+      platform: 'twitch',
+      group: 'chat',
+      name: 'Chat width',
+      description: "Drag chat's left edge to make it wider or narrower. Double-click the edge for Twitch's own width again.",
+      status: 'live',
+      default: false,
+    },
 
     /* ---------- Kick ---------- */
     {
@@ -263,6 +344,15 @@
       status: 'live',
       default: false,
       options: [{ id: 'kickFavHideDup', type: 'toggle', label: 'Hide them from the Following list', default: true }],
+    },
+    {
+      id: 'kickStar',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Star button',
+      description: 'A ★ next to Follow on kick.com channel pages pins the channel to your Kick favorites (the Channels list in this tab), or unpins it.',
+      status: 'live',
+      default: false,
     },
     {
       id: 'kickOnlyFollowing',
@@ -309,6 +399,58 @@
       description: "Every stream plays at the highest quality you can watch, instead of Kick's Auto, which lowers it now and then.",
       status: 'live',
       default: false,
+    },
+    {
+      id: 'kickTheater',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Auto theater mode',
+      description: "Switches Kick's player to theater mode when you open a channel.",
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'kickCleanChat',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Cleaner chat',
+      description: 'Hides the chat clutter you pick below.',
+      status: 'live',
+      default: false,
+      options: [
+        { id: 'kickChatHideBadges', type: 'toggle', label: 'Badges next to names', default: true },
+        { id: 'kickChatHideSubs', type: 'toggle', label: 'Subscriptions and gifted subs', default: true },
+        { id: 'kickChatHideBots', type: 'toggle', label: 'Bot messages (BotRix, StreamElements and the like)', default: true },
+        { id: 'kickChatCompact', type: 'toggle', label: 'Compact lines', default: true },
+      ],
+    },
+    {
+      id: 'kickCompressor',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Audio compressor',
+      description: "A button in Kick's player that evens out loud and quiet moments, so one volume works for the whole stream.",
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'kickAutoRefresh',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Auto refresh on player errors',
+      description: "Reloads the page by itself when the stream gets stuck and doesn't come back.",
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'kickShortcuts',
+      platform: 'kick',
+      group: 'onKick',
+      name: 'Shortcuts & screenshot',
+      description: 'Press S for a screenshot and P for picture-in-picture. Kick already has T theater, F fullscreen, M mute and C clip.',
+      status: 'live',
+      default: false,
+      options: [{ id: 'kickScreenshotButton', type: 'toggle', label: 'Screenshot button in the player', default: true }],
     },
 
     /* ---------- YouTube ---------- */
@@ -388,6 +530,100 @@
       default: false,
       options: [{ id: 'ytScrollStep', type: 'range', label: 'Step', min: 1, max: 20, unit: '%', default: 1 }],
     },
+    {
+      id: 'ytShortsPlayer',
+      platform: 'youtube',
+      group: 'ytFeed',
+      name: 'Shorts in the normal player',
+      description: 'Shorts open as regular videos, in the normal player with its controls and comments.',
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'ytHideWatched',
+      platform: 'youtube',
+      group: 'ytFeed',
+      name: 'Hide watched videos',
+      description: "Videos you've watched are hidden on Home, in Subscriptions and in the suggestions next to a video.",
+      status: 'live',
+      default: false,
+      options: [
+        {
+          id: 'ytHideWatchedPercent',
+          type: 'select',
+          label: 'Watched at least',
+          default: '80',
+          choices: [
+            ['50', 'Half'],
+            ['80', '80%'],
+            ['100', 'All of it'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'ytSpeed',
+      platform: 'youtube',
+      group: 'ytPlayer',
+      name: 'Default playback speed',
+      description: 'Every video starts at the speed you pick (live streams stay at normal speed). Changing it in the player still works.',
+      status: 'live',
+      default: false,
+      options: [
+        {
+          id: 'ytSpeedValue',
+          type: 'select',
+          label: 'Speed',
+          default: '1.5',
+          choices: [
+            ['1.25', '1.25×'],
+            ['1.5', '1.5×'],
+            ['1.75', '1.75×'],
+            ['2', '2×'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'ytNoAutoplay',
+      platform: 'youtube',
+      group: 'ytPlayer',
+      name: 'Autoplay off',
+      description: "YouTube's autoplay switch stays off, so a video never jumps to the next one when it ends. Playlists still play through.",
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'ytEndScreen',
+      platform: 'youtube',
+      group: 'ytPlayer',
+      name: 'Hide end-screen clutter',
+      description: 'Removes the parts you pick below.',
+      status: 'live',
+      default: false,
+      options: [
+        { id: 'ytEndCards', type: 'toggle', label: 'Cards over the last seconds of a video', default: true },
+        { id: 'ytEndGrid', type: 'toggle', label: 'Grid of suggestions when a video ends', default: true },
+      ],
+    },
+    {
+      id: 'ytCompressor',
+      platform: 'youtube',
+      group: 'ytPlayer',
+      name: 'Audio compressor',
+      description: 'A button in the player that evens out loud and quiet moments, so one volume works for the whole video.',
+      status: 'live',
+      default: false,
+    },
+    {
+      id: 'ytTheater',
+      platform: 'youtube',
+      group: 'ytPlayer',
+      name: 'Auto theater mode',
+      description: 'Videos open in theater (wide) mode. Switching back still works for that video.',
+      status: 'live',
+      default: false,
+    },
 
     /* ---------- Twitter / X ---------- */
     {
@@ -428,8 +664,6 @@
 
     /* ---------- planned ---------- */
     { id: 'notifications', platform: 'twitch', name: 'Live notifications', description: 'A desktop alert when a favorite goes live.', status: 'soon' },
-    { id: 'importFollowed', platform: 'twitch', name: 'Import from Followed', description: 'Pick several followed channels and star them at once.', status: 'soon' },
-    { id: 'chatTweaks', platform: 'twitch', name: 'Highlight favorites in chat', description: 'Make messages from your favorites stand out in any chat.', status: 'soon' },
   ];
 
   function defaultSettings() {

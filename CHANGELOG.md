@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.9.0 — 2026-10-22
+
+All new features are off by default.
+
+- **Twitch**:
+  - **Import from Followed**: a From Followed button on the popup's Favorites list; tick channels you follow on Twitch and pin them in one go.
+  - **Highlight favorites in chat**: messages from your favorite streamers get a gold mark in any chat.
+  - **Chat filter**: hide messages with words you list, and highlight messages with others.
+  - **Chat width**: drag chat's left edge to make it wider or narrower; double-click for Twitch's width.
+  - **Catch up to live**: after buffering, the stream jumps back to live instead of playing on behind.
+  - **Volume boost**: a player button that makes quiet streams louder than 100% (125% to 300%).
+  - **Picture-in-picture button** in the player.
+- **Kick**: Auto theater mode, Cleaner chat (badges, subscriptions and gifted subs, bot messages, compact lines), Audio compressor in Kick's player, Auto refresh when the stream gets stuck, and Shortcuts & screenshot (S screenshot, P picture-in-picture, optional camera button). Kick's player already has its own picture-in-picture button, so the P key uses that.
+- **YouTube**: Shorts in the normal player, Hide watched videos (half, 80% or all of it), Default playback speed (not for live streams), Autoplay off, Hide end-screen clutter (end cards, end grid), Audio compressor and Auto theater mode.
+- **Star button on kick.com** (new, off by default): a ★ next to Follow on Kick channel pages pins the channel to your Kick favorites (the Channels list in the popup's Kick tab), or unpins it, like the star on Twitch.
+- Audio compressor and Volume boost share one sound path, which now only changes when you switch something.
+- New permission: access to `www.twitch.tv`, to read your Twitch login for Import from Followed (it goes only to Twitch). It adds no new warning, as the extension already works on twitch.tv pages.
+
 ## 1.8.1 — 2026-10-21
 
 - **Scroll volume** now works over Twitch extensions shown on the video (overlays and companion apps), which used to catch the wheel; lists inside those extensions still scroll. For this the extension runs a small script inside Twitch extensions on `ext-twitch.tv` that only passes the wheel to the Twitch page. See PRIVACY.md.
