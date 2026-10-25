@@ -189,6 +189,8 @@ Download the latest release zip and replace your old folder with it (or run `git
 - for the YouTube list, `@handles`, channel ids (`UC…`) or `youtube.com` channel links
 - any of the above wrapped in an object under `favorites`, `channels`, `streamers`, `users` or `list`
 
+On Linux, **Import** first opens the popup in a tab (the browser closes the popup itself when a file picker opens there); click **Import** again in that tab to pick your file.
+
 When you already have favorites, you choose whether to add the new ones or replace your list. Channels that no longer exist on Twitch are skipped (as long as Twitch can be reached to check).
 
 ## Privacy

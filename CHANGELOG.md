@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1 — 2026-10-25
+
+- **Import on Linux** now works. The browser closes the popup as soon as the file picker opens on Linux (and ChromeOS), so the picked file never arrived. There, **Import** now opens the popup in a tab, where you click Import again and pick your file.
+
 ## 1.9.0 — 2026-10-22
 
 All new features are off by default.

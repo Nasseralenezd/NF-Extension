@@ -77,6 +77,7 @@
 
   const cur = () => state[platform];
   const P = () => LISTS[platform];
+  const inTab = new URLSearchParams(location.search).get('view') === 'import'; // opened in a tab to import a file
 
   /* ---------- helpers ---------- */
 
@@ -476,10 +477,20 @@
 
   /* ---------- import / export ---------- */
 
+  // On Linux (and ChromeOS) the browser closes the popup as soon as the file
+  // picker takes focus, so the picked file never reaches it. There, Import
+  // opens this page in a tab instead, where the picker works.
+  let pickerClosesPopup = false;
+  if (!inTab) chrome.runtime.getPlatformInfo().then(({ os }) => (pickerClosesPopup = ['linux', 'cros', 'openbsd'].includes(os)), () => {});
+
   function setupBackup() {
     const fileInput = $('#import-file');
     $('#export-button').addEventListener('click', exportFavorites);
-    $('#import-button').addEventListener('click', () => fileInput.click());
+    $('#import-button').addEventListener('click', () => {
+      if (!pickerClosesPopup) return fileInput.click();
+      chrome.tabs.create({ url: chrome.runtime.getURL('src/popup/popup.html?view=import') });
+      window.close();
+    });
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
       fileInput.value = ''; // so picking the same file again still fires
@@ -803,6 +814,12 @@
   [state.twitch.list, state.kick.list, state.youtube.list] = await Promise.all([store.getFavorites('twitch'), store.getFavorites('kick'), store.getFavorites('youtube')]);
   const saved = recall('nftw-platform');
   selectSite(SITES.some(([id]) => id === saved) ? saved : 'twitch'); // renders the tab and looks its channels up
+  if (inTab) {
+    // The file picker needs a click on this page, so it can't open by itself.
+    document.body.classList.add('in-tab');
+    $('#import-button').focus();
+    if (P()) say(`Click Import to choose your ${P().label} file.`);
+  }
 
   store.onChange(async (change) => {
     if (change.settings) {

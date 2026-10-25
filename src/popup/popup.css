@@ -29,6 +29,11 @@ body {
   font: 13px/1.45 Inter, 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
+/* The popup opened in a tab to import a file (Linux) */
+body.in-tab {
+  margin: 32px auto;
+}
+
 button,
 input,
 select {
